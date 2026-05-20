@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evil Hunter Wiki - Pixel Style</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+
+    <style>
+      /* Reset CSS cơ bản và áp dụng font */
+      * {
+        box-sizing: border-box;
+      }
+      
+      body, button, input, textarea, select {
+        font-family: 'Press Start 2P', cursive !important;
+        background-color: #212529; /* Màu nền tối tối cho ngầu */
+        color: white;
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      /* Tùy chỉnh thanh cuộn (Scrollbar) kiểu Pixel cho đồng bộ */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #212529;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #888;
+        border: 2px solid #212529;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
