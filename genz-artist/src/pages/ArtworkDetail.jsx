@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import './ArtworkDetail.css';
 
 /* ── Mock data ─────────────────────────────────────── */
 const ARTWORKS_DB = {
-  1: { title:'Neon Dreams',     artist:'Luna.exe',    handle:'luna.exe',  grad:'linear-gradient(135deg,#f72585,#7209b7)', tag:'Digital',  likes:2841, views:'18.2k', date:'May 28, 2026', desc:'A dreamlike exploration of neon-soaked cityscapes and digital emotions. This piece was created using Photoshop and Midjourney as a base reference, blending my signature purple-pink palette with futuristic aesthetics.' },
-  2: { title:'Void Walker',     artist:'DarkPixel',   handle:'darkpixel', grad:'linear-gradient(135deg,#3a0ca3,#4cc9f0)', tag:'Concept',  likes:1923, views:'11.4k', date:'May 20, 2026', desc:'A lone figure traverses the infinite void between dimensions. Created entirely in Procreate over 12 hours.' },
-  3: { title:'Cherry Blossom AI',artist:'Sakura.psd', handle:'sakura.psd',grad:'linear-gradient(135deg,#ff6b6b,#ffd93d)', tag:'AI Art',   likes:3512, views:'24.1k', date:'May 15, 2026', desc:'Blending traditional Japanese aesthetics with AI-generated textures. A love letter to spring.' },
-  4: { title:'Cyber Temple',    artist:'GlitchGod',   handle:'glitchgod', grad:'linear-gradient(135deg,#06d6a0,#118ab2)', tag:'Pixel',    likes:987,  views:'7.8k',  date:'May 10, 2026', desc:'Pixel art meets brutalist architecture. Built in Aseprite, 64x64 canvas, scaled up with love.' },
-  5: { title:'Astral Drift',    artist:'cosm0s.art',  handle:'cosm0s',    grad:'linear-gradient(135deg,#560bad,#f72585)', tag:'Abstract', likes:4210, views:'31.0k', date:'May 5, 2026',  desc:'An abstract journey through cosmic consciousness. No plan, just flow — painted in one session.' },
+  1: { id: 1, title:'Neon Dreams',     artist:'Luna.exe',    handle:'luna.exe',  grad:'linear-gradient(135deg,#f72585,#7209b7)', tag:'Digital',  likes:2841, views:'18.2k', date:'May 28, 2026', desc:'A dreamlike exploration of neon-soaked cityscapes and digital emotions. This piece was created using Photoshop and Midjourney as a base reference, blending my signature purple-pink palette with futuristic aesthetics.', price: 45.00 },
+  2: { id: 2, title:'Void Walker',     artist:'DarkPixel',   handle:'darkpixel', grad:'linear-gradient(135deg,#3a0ca3,#4cc9f0)', tag:'Concept',  likes:1923, views:'11.4k', date:'May 20, 2026', desc:'A lone figure traverses the infinite void between dimensions. Created entirely in Procreate over 12 hours.', price: 60.00 },
+  3: { id: 3, title:'Cherry Blossom AI',artist:'Sakura.psd', handle:'sakura.psd',grad:'linear-gradient(135deg,#ff6b6b,#ffd93d)', tag:'AI Art',   likes:3512, views:'24.1k', date:'May 15, 2026', desc:'Blending traditional Japanese aesthetics with AI-generated textures. A love letter to spring.', price: 30.00 },
+  4: { id: 4, title:'Cyber Temple',    artist:'GlitchGod',   handle:'glitchgod', grad:'linear-gradient(135deg,#06d6a0,#118ab2)', tag:'Pixel',    likes:987,  views:'7.8k',  date:'May 10, 2026', desc:'Pixel art meets brutalist architecture. Built in Aseprite, 64x64 canvas, scaled up with love.', price: 25.00 },
+  5: { id: 5, title:'Astral Drift',    artist:'cosm0s.art',  handle:'cosm0s',    grad:'linear-gradient(135deg,#560bad,#f72585)', tag:'Abstract', likes:4210, views:'31.0k', date:'May 5, 2026',  desc:'An abstract journey through cosmic consciousness. No plan, just flow — painted in one session.', price: 120.00 },
 };
 
 const RELATED = [
@@ -27,13 +28,29 @@ const COMMENTS = [
 
 export default function ArtworkDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const art = ARTWORKS_DB[id] || ARTWORKS_DB[1];
+  const { addItem } = useCart();
 
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState(COMMENTS);
   const [followed, setFollowed] = useState(false);
+
+  const [purchaseType, setPurchaseType] = useState('Digital'); // Digital or Print
+
+  const handleAddToCart = () => {
+    addItem({
+      id: art.id,
+      title: art.title,
+      artist: art.artist,
+      grad: art.grad,
+      type: purchaseType,
+      price: purchaseType === 'Digital' ? art.price : art.price + 25.00
+    });
+    navigate('/cart');
+  };
 
   const handleComment = (e) => {
     e.preventDefault();
@@ -62,6 +79,7 @@ export default function ArtworkDetail() {
           <span className="dt-bc-current">{art.title}</span>
         </div>
         <div className="dt-nav-right">
+          <Link to="/cart" className="dt-nav-cart-icon">🛒</Link>
           <Link to="/login" className="dt-nav-btn outline">Sign In</Link>
           <Link to="/register" className="dt-nav-btn solid">Join Free</Link>
         </div>
@@ -206,6 +224,30 @@ export default function ArtworkDetail() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Purchase box */}
+          <div className="sidebar-card purchase-box">
+            <div className="purchase-options">
+              <button
+                className={`purchase-opt ${purchaseType === 'Digital' ? 'active' : ''}`}
+                onClick={() => setPurchaseType('Digital')}
+              >
+                <span>💾 Digital</span>
+                <span>${art.price.toFixed(2)}</span>
+              </button>
+              <button
+                className={`purchase-opt ${purchaseType === 'Print' ? 'active' : ''}`}
+                onClick={() => setPurchaseType('Print')}
+              >
+                <span>🖼️ Art Print</span>
+                <span>${(art.price + 25).toFixed(2)}</span>
+              </button>
+            </div>
+            <button className="add-to-cart-btn" onClick={handleAddToCart}>
+              Add to Cart
+            </button>
+            <p className="purchase-note">✓ 4K Resolution Original File<br/>✓ Commercial License Optional</p>
           </div>
 
           {/* Related */}
