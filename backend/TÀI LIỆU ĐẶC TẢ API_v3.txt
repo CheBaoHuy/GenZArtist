@@ -1,0 +1,326 @@
+TÀI LIỆU ĐẶC TẢ API CHI TIẾT V2 - HỆ THỐNG TMĐT HỌA SĨ(Bản hợp nhất đầy đủ 27 API: Gồm 17 API Bắt buộc gốc & 10 API Nghiệp vụ nâng cao)MỤC LỤC MODULESModule Xác thực & Tài khoản (Authentication & Profile) (5 API)Module Người mua & Sản phẩm công cộng (Buyer & Public Products) (12 API)Module Họa sĩ (Seller) (6 API)Module Quản trị viên (Admin) (4 API)1. MODULE XÁC THỰC & TÀI KHOẢN (AUTHENTICATION & PROFILE)1.1. Đăng ký tài khoảnEndpoint: POST /api/v1/auth/registerAuth required: KhôngRequest Body (JSON):{
+  "email": "hoasi_abc@gmail.com",
+  "password": "StrongPassword123!",
+  "fullName": "Nguyễn Văn Nghệ Thuật",
+  "phoneNumber": "0901234567",
+  "role": "SELLER", // "SELLER" hoặc "BUYER"
+  "avatarUrl": "https://link-to-cloud/avatar.jpg"
+}
+Response (201 Created):{
+  "status": "success",
+  "message": "Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản."
+}
+1.2. Đăng nhập hệ thốngEndpoint: POST /api/v1/auth/loginAuth required: KhôngRequest Body (JSON):{
+  "email": "hoasi_abc@gmail.com",
+  "password": "StrongPassword123!"
+}
+Response (200 OK):{
+  "status": "success",
+  "message": "Đăng nhập thành công.",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "tokenType": "Bearer",
+    "user": {
+      "id": 12,
+      "email": "hoasi_abc@gmail.com",
+      "fullName": "Nguyễn Văn Nghệ Thuật",
+      "role": "SELLER",
+      "avatarUrl": "https://link-to-cloud/avatar.jpg"
+    }
+  }
+}
+1.3. Đăng xuấtEndpoint: POST /api/v1/auth/logoutAuth required: Có (Bearer Token)Response (200 OK):{
+  "status": "success",
+  "message": "Đăng xuất thành công."
+}
+1.4. Lấy lại mật khẩu (Quên mật khẩu)Endpoint: POST /api/v1/auth/forgot-passwordAuth required: KhôngRequest Body (JSON):{
+  "email": "hoasi_abc@gmail.com"
+}
+Response (200 OK):{
+  "status": "success",
+  "message": "Yêu cầu khôi phục mật khẩu thành công. Vui lòng kiểm tra hộp thư đến."
+}
+1.5. Cập nhật thông tin cá nhân (Mới 1)Endpoint: PUT /api/v1/users/profileAuth required: Có (Tất cả vai trò)Request Body (JSON):{
+  "fullName": "Nguyễn Văn Nghệ Thuật (Đã Đổi)",
+  "phoneNumber": "0909999999",
+  "avatarUrl": "https://link-to-cloud/new-avatar.jpg",
+  "address": "123 Đường Sáng Tạo, Quận 1, TP. HCM"
+}
+Response (200 OK):{
+  "status": "success",
+  "message": "Cập nhật thông tin cá nhân thành công.",
+  "data": {
+    "id": 12,
+    "email": "hoasi_abc@gmail.com",
+    "fullName": "Nguyễn Văn Nghệ Thuật (Đã Đổi)",
+    "phoneNumber": "0909999999",
+    "avatarUrl": "https://link-to-cloud/new-avatar.jpg",
+    "address": "123 Đường Sáng Tạo, Quận 1, TP. HCM"
+  }
+}
+2. MODULE NGƯỜI MUA & SẢN PHẨM CÔNG CỘNG (BUYER & PUBLIC PRODUCTS)2.1. Xem chi tiết sản phẩmEndpoint: GET /api/v1/products/{id}Auth required: KhôngMô tả: Khi gọi API này, Backend tự động tăng view_count của sản phẩm lên +1 trong MySQL.Response (200 OK):{
+  "status": "success",
+  "data": {
+    "id": 101,
+    "name": "Tranh Sơn Dầu Mùa Thu",
+    "description": "Phong cảnh mùa thu lãng mạn...",
+    "price": 1200000,
+    "imageUrl": "https://link-to-cloud/preview-watermark.jpg",
+    "category": { "id": 1, "name": "Sơn dầu" },
+    "viewCount": 151, // Đã được cộng thêm 1 lượt xem
+    "createdAt": "2023-10-01T08:00:00Z",
+    "seller": {
+      "id": 5,
+      "fullName": "Nguyễn Văn Nghệ Thuật"
+    }
+  }
+}
+2.2. Tìm kiếm, Lọc và Sắp xếp sản phẩm (Mới 4, 5, 6)Endpoint: GET /api/v1/productsAuth required: KhôngQuery Parameters:categoryId (Lọc theo danh mục - Mới 4)sellerId (Xem sản phẩm thuộc gian hàng của một họa sĩ cụ thể - Mới 6)minPrice, maxPrice (Lọc khoảng giá - Mới 4)search (Tìm kiếm theo tên)sortBy (Trường sắp xếp: price hoặc createdAt hoặc viewCount - Mới 5)order (Thứ tự sắp xếp: asc hoặc desc - Mới 5)page, size (Phân trang)Ví dụ Request URL: /api/v1/products?categoryId=1&sellerId=5&minPrice=500000&sortBy=price&order=asc&page=1&size=10Response (200 OK):{
+  "status": "success",
+  "data": {
+    "products": [
+      {
+        "id": 101,
+        "name": "Tranh Sơn Dầu Mùa Thu",
+        "price": 1200000,
+        "imageUrl": "https://link-to-cloud/preview-watermark.jpg",
+        "category": { "id": 1, "name": "Sơn dầu" },
+        "viewCount": 150
+      }
+    ],
+    "pagination": {
+      "currentPage": 1,
+      "totalPages": 3,
+      "totalItems": 28
+    }
+  }
+}
+2.3. Lấy danh sách sản phẩm mới nhất (Mới 8)Endpoint: GET /api/v1/products/latestAuth required: KhôngQuery Parameter: limit (Mặc định là 10)Mô tả: Trả về danh sách sản phẩm sắp xếp theo createdAt DESC để hiển thị trên Trang chủ.Response (200 OK):{
+  "status": "success",
+  "data": [
+    {
+      "id": 105,
+      "name": "Tranh Phong Cảnh Đại Dương",
+      "price": 1300000,
+      "imageUrl": "https://link-to-cloud/preview-watermark-2.jpg",
+      "createdAt": "2023-11-05T10:30:00Z"
+    }
+  ]
+}
+2.4. Lấy danh sách sản phẩm xem nhiều nhất (Mới 9)Endpoint: GET /api/v1/products/popularAuth required: KhôngQuery Parameter: limit (Mặc định là 10)Mô tả: Trả về danh sách sản phẩm sắp xếp theo viewCount DESC để hiển thị trên Trang chủ.Response (200 OK):{
+  "status": "success",
+  "data": [
+    {
+      "id": 101,
+      "name": "Tranh Sơn Dầu Mùa Thu",
+      "price": 1200000,
+      "imageUrl": "https://link-to-cloud/preview-watermark.jpg",
+      "viewCount": 15000
+    }
+  ]
+}
+2.5. Thêm vào giỏ hàngEndpoint: POST /api/v1/cart/itemsAuth required: Có (Quyền: Buyer)Request Body (JSON):{
+  "productId": 101,
+  "quantity": 1
+}
+Response (200 OK):{
+  "status": "success",
+  "message": "Đã thêm sản phẩm vào giỏ hàng."
+}
+2.6. Cập nhật số lượng giỏ hàng (Mới 7)Endpoint: PUT /api/v1/cart/items/{id}Auth required: Có (Quyền: Buyer)Path Parameter: id (ID của dòng CartItem trong DB)Request Body (JSON):{
+  "quantity": 3
+}
+Response (200 OK):{
+  "status": "success",
+  "message": "Cập nhật giỏ hàng thành công.",
+  "data": {
+    "cartItemId": 45,
+    "productId": 101,
+    "quantity": 3,
+    "unitPrice": 1200000,
+    "subTotal": 3600000,       // Thành tiền của sản phẩm này (tự động tính)
+    "totalCartAmount": 5500000 // Tổng tiền cả giỏ hàng (Frontend dùng React re-render)
+  }
+}
+2.7. Tạo đơn hàng (Mua hàng)Endpoint: POST /api/v1/ordersAuth required: Có (Quyền: Buyer)Request Body (JSON):{
+  "paymentMethod": "VNPAY",
+  "shippingAddress": "123 Đường Sáng Tạo, Quận 1, TP. HCM", // Có thể null với Tranh Số
+  "items": [
+    { "productId": 101, "quantity": 1 }
+  ]
+}
+Response (201 Created):{
+  "status": "success",
+  "data": {
+    "orderId": "ORD-20231105-X7Z",
+    "totalAmount": 1200000,
+    "orderStatus": "PENDING",
+    "paymentUrl": "[https://sandbox.vnpayment.vn/payment/v2/](https://sandbox.vnpayment.vn/payment/v2/)...",
+    "createdAt": "2023-11-05T10:30:00Z"
+  }
+}
+2.8. Yêu cầu thanh toán lạiEndpoint: POST /api/v1/orders/{id}/payAuth required: Có (Quyền: Buyer)Response (200 OK):{
+  "status": "success",
+  "data": {
+    "orderId": "ORD-20231105-X7Z",
+    "paymentUrl": "[https://sandbox.vnpayment.vn/payment/v2/](https://sandbox.vnpayment.vn/payment/v2/)..."
+  }
+}
+2.9. Hủy đơn hàng (Mới 3)Endpoint: PUT /api/v1/orders/{id}/cancelAuth required: Có (Quyền: Buyer, Seller hoặc Admin)Path Parameter: id (Mã đơn hàng, ví dụ: ORD-20231105-X7Z)Mô tả logic: Backend kiểm tra nếu đơn hàng đang ở trạng thái PENDING (chưa xử lý/thanh toán) thì mới cho phép chuyển status thành CANCELLED.Response (200 OK):{
+  "status": "success",
+  "message": "Hủy đơn hàng thành công.",
+  "data": {
+    "orderId": "ORD-20231105-X7Z",
+    "orderStatus": "CANCELLED"
+  }
+}
+2.10. Xem lịch sử mua hàngEndpoint: GET /api/v1/orders/historyAuth required: Có (Quyền: Buyer)Response (200 OK):{
+  "status": "success",
+  "data": {
+    "orders": [
+      {
+        "orderId": "ORD-20231105-X7Z",
+        "totalAmount": 1200000,
+        "paymentMethod": "VNPAY",
+        "orderStatus": "COMPLETED",
+        "createdAt": "2023-11-05T10:30:00Z",
+        "items": [
+          {
+            "productId": 101,
+            "name": "Tranh Sơn Dầu Mùa Thu",
+            "unitPrice": 1200000,
+            "imageUrl": "https://link-to-cloud/preview-watermark.jpg",
+            "fileUrl": "https://link-to-cloud/file-goc-chat-luong-cao.png" // Chỉ xuất hiện khi trạng thái đơn hàng là COMPLETED
+          }
+        ]
+      }
+    ],
+    "pagination": { "currentPage": 1, "totalPages": 1, "totalItems": 1 }
+  }
+}
+2.11. Đánh giá sản phẩm đã mua (Mới 10)Endpoint: POST /api/v1/reviewsAuth required: Có (Quyền: Buyer)Mô tả logic: Backend kiểm tra xem User này đã từng hoàn tất mua sản phẩm này trong đơn hàng trạng thái DELIVERED hoặc COMPLETED chưa, nếu đúng mới cho đánh giá.Request Body (JSON):{
+  "productId": 101,
+  "orderId": "ORD-20231105-X7Z",
+  "rating": 5, // Điểm từ 1 đến 5
+  "comment": "Tranh sơn dầu vẽ rất có hồn, đóng gói cẩn thận!"
+}
+Response (201 Created):{
+  "status": "success",
+  "message": "Đánh giá sản phẩm thành công.",
+  "data": {
+    "reviewId": 1,
+    "productId": 101,
+    "rating": 5,
+    "comment": "Tranh sơn dầu vẽ rất có hồn, đóng gói cẩn thận!",
+    "createdAt": "2023-11-06T09:15:00Z"
+  }
+}
+3. MODULE HỌA SĨ (SELLER)3.1. Danh sách sản phẩm của họa sĩEndpoint: GET /api/v1/seller/productsAuth required: Có (Quyền: Seller)Response (200 OK):{
+  "status": "success",
+  "data": {
+    "products": [
+      {
+        "id": 101,
+        "name": "Tranh Sơn Dầu Mùa Thu",
+        "category": { "id": 1, "name": "Sơn dầu" },
+        "price": 1200000,
+        "status": "APPROVED",
+        "createdAt": "2023-10-01T08:00:00Z"
+      }
+    ]
+  }
+}
+3.2. Đăng bán sản phẩm mớiEndpoint: POST /api/v1/seller/productsAuth required: Có (Quyền: Seller)Request Body (JSON):{
+  "name": "Tranh Sơn Dầu Mùa Thu",
+  "categoryId": 1,
+  "price": 1200000,
+  "imageUrl": "https://link-to-cloud/preview-watermark.jpg",
+  "fileUrl": "https://link-to-cloud/file-goc-chat-luong-cao.png"
+}
+Response (201 Created):{
+  "status": "success",
+  "message": "Sản phẩm đã được tạo và chờ Admin phê duyệt.",
+  "data": {
+    "id": 101,
+    "status": "PENDING"
+  }
+}
+3.3. Quản lý đơn hàng khách đặt (Danh sách đơn của họa sĩ)Endpoint: GET /api/v1/seller/ordersAuth required: Có (Quyền: Seller)Response (200 OK):{
+  "status": "success",
+  "data": {
+    "orders": [
+      {
+        "orderId": "ORD-20231105-X7Z",
+        "createdAt": "2023-11-05T10:30:00Z",
+        "buyer": {
+          "fullName": "Nguyễn Người Mua"
+        },
+        "items": [
+          { "productId": 101, "name": "Tranh Sơn Dầu Mùa Thu", "quantity": 1, "unitPrice": 1200000 }
+        ],
+        "totalAmount": 1200000,
+        "orderStatus": "PENDING"
+      }
+    ]
+  }
+}
+3.4. Cập nhật trạng thái đơn hàng (Mới 2)Endpoint: PUT /api/v1/orders/{id}/statusAuth required: Có (Quyền: Seller hoặc Admin)Path Parameter: id (Ví dụ: ORD-20231105-X7Z)Request Body (JSON):{
+  "status": "ACCEPTED" // "ACCEPTED", "SHIPPING", "DELIVERED", "REJECTED"
+}
+Response (200 OK):{
+  "status": "success",
+  "message": "Cập nhật trạng thái đơn hàng thành công.",
+  "data": {
+    "orderId": "ORD-20231105-X7Z",
+    "orderStatus": "ACCEPTED",
+    "updatedAt": "2023-11-05T11:00:00Z"
+  }
+}
+3.5. Thống kê doanh thu (Biểu đồ cột)Endpoint: GET /api/v1/seller/stats/revenue-barAuth required: Có (Quyền: Seller)Response (200 OK):{
+  "status": "success",
+  "data": {
+    "summary": { "totalRevenue": 55000000, "growthRate": "+15%" },
+    "chartData": {
+      "labels": ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
+      "datasets": [
+        { "label": "Doanh thu thực tế (VNĐ)", "data": [12000000, 15000000, 10000000, 18000000] }
+      ]
+    }
+  }
+}
+3.6. Thống kê theo danh mục (Biểu đồ tròn)Endpoint: GET /api/v1/seller/stats/revenue-pieAuth required: Có (Quyền: Seller)Response (200 OK):{
+  "status": "success",
+  "data": {
+    "summary": { "totalProductsSold": 120 },
+    "chartData": {
+      "labels": ["Sơn dầu", "Màu nước", "Tranh chì", "Tranh kỹ thuật số"],
+      "datasets": [
+        { "label": "Tỷ lệ doanh thu (%)", "data": [50, 20, 10, 20] }
+      ]
+    }
+  }
+}
+4. MODULE QUẢN TRỊ VIÊN (ADMIN)4.1. Quản lý tài khoản người dùngEndpoint: GET /api/v1/admin/usersAuth required: Có (Quyền: Admin)Response (200 OK):{
+  "status": "success",
+  "data": {
+    "users": [
+      { "id": 12, "email": "hoasi_abc@gmail.com", "fullName": "Nguyễn Văn Nghệ Thuật", "role": "SELLER", "status": "ACTIVE" }
+    ]
+  }
+}
+4.2. Quản lý và duyệt toàn bộ sản phẩm (Duyệt tranh)Endpoint: GET /api/v1/admin/productsAuth required: Có (Quyền: Admin)Response (200 OK):{
+  "status": "success",
+  "data": {
+    "products": [
+      { "id": 102, "name": "Tranh Đồi Núi", "seller": { "fullName": "Nguyễn Văn Nghệ Thuật" }, "price": 1800000, "status": "PENDING" }
+    ]
+  }
+}
+4.3. Quản lý toàn bộ đơn hàng hệ thốngEndpoint: GET /api/v1/admin/ordersAuth required: Có (Quyền: Admin)Response (200 OK):{
+  "status": "success",
+  "data": {
+    "orders": [
+      { "orderId": "ORD-20231105-X7Z", "totalAmount": 2500000, "orderStatus": "COMPLETED" }
+    ]
+  }
+}
