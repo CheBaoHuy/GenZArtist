@@ -1,0 +1,12 @@
+package com.kaiju.store.repository;
+
+import com.kaiju.store.model.RevenueRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface RevenueRecordRepository extends JpaRepository<RevenueRecord, Long> {
+    List<RevenueRecord> findBySellerId(Long sellerId);
+}
