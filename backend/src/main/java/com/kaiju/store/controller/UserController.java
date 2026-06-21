@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -16,6 +17,19 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping("/profile")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getProfile() {
+        User currentUser = SecurityUtils.getCurrentUser();
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("id", currentUser.getId());
+        data.put("email", currentUser.getEmail());
+        data.put("fullName", currentUser.getFullName());
+        data.put("phoneNumber", currentUser.getPhoneNumber());
+        data.put("avatarUrl", currentUser.getAvatarUrl());
+        data.put("address", currentUser.getAddress());
+        return ResponseEntity.ok(new ApiResponse<>("success", "Thông tin cá nhân của bạn.", data));
+    }
 
     @PutMapping("/profile")
     public ResponseEntity<ApiResponse<Map<String, Object>>> updateProfile(

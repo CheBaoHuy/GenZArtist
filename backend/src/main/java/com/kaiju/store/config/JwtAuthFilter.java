@@ -2,6 +2,7 @@ package com.kaiju.store.config;
 
 import com.kaiju.store.model.User;
 import com.kaiju.store.repository.UserRepository;
+import com.kaiju.store.service.TokenBlacklistService;
 import com.kaiju.store.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,6 +27,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -33,13 +37,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             try {
-                String email = jwtUtil.validateTokenAndGetEmail(token);
-                userRepository.findByEmail(email).ifPresent(user -> {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            user, null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                });
+                if (!tokenBlacklistService.isBlacklisted(token)) {
+                    String email = jwtUtil.validateTokenAndGetEmail(token);
+                    userRepository.findByEmail(email).ifPresent(user -> {
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                user, null,
+                                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    });
+                }
             } catch (Exception ignored) {
             }
         }

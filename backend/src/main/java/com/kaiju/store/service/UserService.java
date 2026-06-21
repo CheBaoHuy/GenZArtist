@@ -26,10 +26,9 @@ public class UserService {
         if (request.containsKey("avatarUrl")) {
             currentUser.setAvatarUrl(request.get("avatarUrl"));
         }
-        // Nếu trong Entity User có thuộc tính address, bạn có thể uncomment để sử dụng:
-        // if (request.containsKey("address")) {
-        //     currentUser.setAddress(request.get("address"));
-        // }
+        if (request.containsKey("address")) {
+            currentUser.setAddress(request.get("address"));
+        }
 
         User updatedUser = userRepository.save(currentUser);
 
@@ -39,6 +38,7 @@ public class UserService {
         data.put("fullName", updatedUser.getFullName());
         data.put("phoneNumber", updatedUser.getPhoneNumber());
         data.put("avatarUrl", updatedUser.getAvatarUrl());
+        data.put("address", updatedUser.getAddress());
         return data;
     }
 }
