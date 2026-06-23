@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.kaiju.store.dto.UserDto;
+import com.kaiju.store.model.Category;
 import com.kaiju.store.repository.ApiResponse;
 import com.kaiju.store.service.AdminService;
+import com.kaiju.store.service.CategoryService;
 import com.kaiju.store.service.ProductService;
 import com.kaiju.store.service.OrderService;
 
@@ -24,6 +26,9 @@ public class AdminController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getUsers(
@@ -100,5 +105,29 @@ public class AdminController {
     public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok(new ApiResponse<>("success", "Xóa sản phẩm thành công.", null));
+    }
+
+    @GetMapping("/categories/{id}")
+    public ResponseEntity<ApiResponse<Category>> getCategory(@PathVariable Long id) {
+        return ResponseEntity.ok(new ApiResponse<>("success", null, categoryService.getById(id)));
+    }
+
+    @PostMapping("/categories")
+    public ResponseEntity<ApiResponse<Category>> createCategory(@RequestBody Map<String, Object> request) {
+        Category created = categoryService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>("success", "Tạo danh mục thành công.", created));
+    }
+
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<ApiResponse<Category>> updateCategory(@PathVariable Long id, @RequestBody Map<String, Object> request) {
+        Category updated = categoryService.update(id, request);
+        return ResponseEntity.ok(new ApiResponse<>("success", "Cập nhật danh mục thành công.", updated));
+    }
+
+    @DeleteMapping("/categories/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Long id) {
+        categoryService.delete(id);
+        return ResponseEntity.ok(new ApiResponse<>("success", "Xóa danh mục thành công.", null));
     }
 }

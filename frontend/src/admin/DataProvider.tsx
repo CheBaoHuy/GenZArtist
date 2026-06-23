@@ -6,7 +6,7 @@ const apiUrl = 'http://localhost:8080/api/v1';
 const resourceBase = (resource: string) => {
     if (resource === 'user') return `${apiUrl}/admin/users`;
     if (resource === 'product') return `${apiUrl}/admin/products`;
-    if (resource === 'category') return `${apiUrl}/categories`;
+    if (resource === 'category') return `${apiUrl}/admin/categories`;
     return `${apiUrl}/${resource}`;
 };
 
@@ -100,6 +100,12 @@ export const dataProvider: DataProvider = {
             // categoryId đã có sẵn từ backend để bind vào SelectInput
             return { data: json.data };
         }
+        if (resource === 'category') {
+            const { json } = await httpClient(`${apiUrl}/admin/categories/${params.id}`, {
+                method: 'GET',
+            });
+            return { data: json.data };
+        }
         const {json} = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'GET',
             headers: new Headers({
@@ -126,21 +132,17 @@ export const dataProvider: DataProvider = {
             });
             return { data: json.data };
         }
-        // if (resource === 'category') {
-        //     if (params.data.parentCategory.id === null || params.data.parentCategory.id === undefined ) {
-        //         params.data.parentCategory = null
-        //     }
-        //     const { json } = await httpClient(`${apiUrl}/${resource}`, {
-        //         method: 'POST',
-        //         body: JSON.stringify(params.data),
-        //         headers: new Headers({
-        //             'Content-Type': 'application/json',
-        //             Accept: 'application/json',
-        //         }),
-        //
-        //     });
-        //     return { data: json };
-        // }
+        if (resource === 'category') {
+            const { json } = await httpClient(`${apiUrl}/admin/categories`, {
+                method: 'POST',
+                body: JSON.stringify(params.data),
+                headers: new Headers({
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                }),
+            });
+            return { data: json.data };
+        }
         if(resource === 'user') {
             const { json } = await httpClient(`${apiUrl}/admin/users`, {
                 method: 'POST',
@@ -180,20 +182,17 @@ export const dataProvider: DataProvider = {
             });
             return { data: json.data };
         }
-        // if (resource === 'category') {
-        //     if (params.data.parentCategory.id === null) {
-        //         params.data.parentCategory = null
-        //     }
-        //     const { json } = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
-        //         method: 'PUT',
-        //         headers: new Headers({
-        //             'Content-Type': 'application/json',
-        //             Accept: 'application/json',
-        //         }),
-        //         body: JSON.stringify(params.data),
-        //     });
-        //     return { data: json };
-        // }
+        if (resource === 'category') {
+            const { json } = await httpClient(`${apiUrl}/admin/categories/${params.id}`, {
+                method: 'PUT',
+                headers: new Headers({
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                }),
+                body: JSON.stringify(params.data),
+            });
+            return { data: json.data };
+        }
         if (resource === 'user') {
             // Không gửi password rỗng để backend giữ nguyên mật khẩu cũ
             const body = { ...params.data };
