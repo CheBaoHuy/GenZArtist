@@ -23,9 +23,9 @@ export const NewUserStats = ({newUsersList} :  { newUsersList: User[] }) => {
                         {newUsersList.map(user => (
                             <ListItem key={user.id}>
                                 <ListItemAvatar>
-                                    <Avatar src={user.avatar} />
+                                    <Avatar src={user.avatar_url} />
                                 </ListItemAvatar>
-                                <ListItemText primary={user.username} />
+                                <ListItemText primary={user.full_name} />
                             </ListItem>
                         ))}
                     </List>

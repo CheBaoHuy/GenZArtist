@@ -5,8 +5,9 @@ import axios from "axios";
 export const authProvider : AuthProvider = {
     checkAuth: ()=> {
         const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
         if (token) {
-            const role = JSON.parse(token).role;
+            // const checkRole = JSON.parse(role).role
             if (role === 'ADMIN') {
                 return Promise.resolve();
             } else {
@@ -28,8 +29,8 @@ export const authProvider : AuthProvider = {
     },
     getPermissions: () => {
         const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
         if (token) {
-            const role = JSON.parse(token).role;
             if (role === 'ADMIN') {
                 return Promise.resolve();
             } else {
@@ -46,7 +47,7 @@ export const authProvider : AuthProvider = {
         try {
             const response = await axios.post('http://localhost:8080/api/v1/auth/login', {username, password});
             const token = response.data;
-            const role = response.data.role;
+            const role = localStorage.getItem('role');
             if (!token) {
                 throw new Error('Phiên đăng nhập đã hết hạn !');
             }

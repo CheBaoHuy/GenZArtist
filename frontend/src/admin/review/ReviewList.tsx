@@ -28,9 +28,9 @@ export const ReviewList = () =>{
             notify('Thay đổi trạng thái thành công', {type: 'success'});
             // Làm mới danh sách
             refresh();
-        } catch ({message}) {
+        } catch (error: any) {
             // Hiển thị thông báo lỗi
-            notify(`Error: ${message}`, {type: 'warning'});
+            notify(`Error: ${error.message || error}`, {type: 'warning'});
         }
     }
     return  (

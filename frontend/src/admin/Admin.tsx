@@ -17,9 +17,8 @@ import {
     Inventory,
     Category,
     Receipt,
-    Discount,
     RateReview,
-    Newspaper
+
 } from "@mui/icons-material";
 
 import { dataProvider } from "./DataProvider";
@@ -42,15 +41,9 @@ import { CategoryCreate } from "./category/CategoryCreate";
 import { OrderList } from "./order/OrderList";
 import { OrderEdit } from "./order/OrderEdit";
 
-import { DiscountList } from "./discount/DiscountList";
-import { DiscountEdit } from "./discount/DiscountEdit";
-import { DiscountCreate } from "./discount/DiscountCreate";
-
 import { ReviewList } from "./review/ReviewList";
 
-import { BlogList } from "./blog/BlogList";
-import { BlogEdit } from "./blog/BlogEdit";
-import { BlogCreate } from "./blog/BlogCreate";
+
 
 /**
  * Custom Menu
@@ -93,11 +86,7 @@ const CustomMenu = () => (
             leftIcon={<Receipt />}
         />
 
-        <MenuItemLink
-            to="/admin/discount"
-            primaryText="Mã giảm giá"
-            leftIcon={<Discount />}
-        />
+
 
         <MenuItemLink
             to="/admin/review"
@@ -105,11 +94,7 @@ const CustomMenu = () => (
             leftIcon={<RateReview />}
         />
 
-        <MenuItemLink
-            to="/admin/blog"
-            primaryText="Bài viết"
-            leftIcon={<Newspaper />}
-        />
+
     </Menu>
 );
 
@@ -170,14 +155,7 @@ export const Manager = () => {
                 options={{ label: "Đơn hàng" }}
             />
 
-            <Resource
-                name="discount"
-                list={DiscountList}
-                show={ShowGuesser}
-                edit={DiscountEdit}
-                create={DiscountCreate}
-                options={{ label: "Mã giảm giá" }}
-            />
+
 
             <Resource
                 name="review"
@@ -186,13 +164,7 @@ export const Manager = () => {
                 options={{ label: "Đánh giá" }}
             />
 
-            <Resource
-                name="blog"
-                list={BlogList}
-                edit={BlogEdit}
-                create={BlogCreate}
-                options={{ label: "Bài viết" }}
-            />
+
         </Admin>
     );
 };

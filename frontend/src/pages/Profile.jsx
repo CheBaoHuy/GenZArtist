@@ -47,6 +47,8 @@ export default function Profile() {
   const [followed, setFollowed] = useState(false);
   const [likedIds, setLikedIds] = useState([]);
 
+  const getRole = localStorage.getItem("role")
+  console.log(getRole)
   const { profileName } = useParams();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -109,6 +111,7 @@ export default function Profile() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('role');
     window.location.href = '/login';
   }
 
@@ -125,7 +128,10 @@ export default function Profile() {
         <Link to="/" className="pf-nav-logo">🎨 <span>GenZArtist</span></Link>
         <div className="pf-nav-right">
           <Link to="/" className="pf-nav-link">Home</Link>
-          
+          {getRole === 'ADMIN' ?
+              <li id={"manager_navigate"} className="menu-item">
+                <Link className="pf-nav-link" to={"/admin"}>Quản lý</Link>
+              </li> : ""}
         </div>
       </nav>
 
