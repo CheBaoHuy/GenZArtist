@@ -2,12 +2,39 @@ import {DataProvider, fetchUtils} from "react-admin";
 import {imgUpload} from "./img/imageUpload";
 
 const apiUrl = 'http://localhost:8080/api/v1';
-const httpClient = fetchUtils.fetchJson;
+
+// Wrapper tự động đính kèm JWT (Bearer) vào mọi request gọi tới backend.
+// Các endpoint /admin/** yêu cầu quyền ADMIN nên bắt buộc phải có header này.
+const httpClient = (url: string, options: any = {}) => {
+    const headers = options.headers instanceof Headers
+        ? options.headers
+        : new Headers(options.headers || { Accept: 'application/json' });
+    const token = localStorage.getItem('token');
+    if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+    }
+    return fetchUtils.fetchJson(url, { ...options, headers });
+};
 // @ts-ignore
 export const dataProvider: DataProvider = {
     // @ts-ignore
     getList: async (resource, params) => {
         const { page = 1, perPage = 10 } = params.pagination || {}; // Lấy thông tin phân trang
+        // Resource user map sang endpoint /admin/users (envelope ApiResponse)
+        if (resource === 'user') {
+            const userQuery: any = { page, size: perPage };
+            if (params.filter && params.filter.role) {
+                userQuery.role = params.filter.role;
+            }
+            const { json } = await httpClient(
+                `${apiUrl}/admin/users?${fetchUtils.queryParameters(userQuery)}`,
+                { method: 'GET' }
+            );
+            return {
+                data: json.data.users,
+                total: json.data.pagination.totalItems,
+            };
+        }
         const { field = 'id', order = 'ASC' } = params.sort || {}; // Lấy thông tin sắp xếp
         const query = {
             sortBy: field, // Trường cần sắp xếp
@@ -30,6 +57,12 @@ export const dataProvider: DataProvider = {
     },
 // @ts-ignore
     getOne: async (resource: any, params: any) => {
+        if (resource === 'user') {
+            const { json } = await httpClient(`${apiUrl}/admin/users/${params.id}`, {
+                method: 'GET',
+            });
+            return { data: json.data };
+        }
         const {json} = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'GET',
             headers: new Headers({
@@ -80,23 +113,15 @@ export const dataProvider: DataProvider = {
         //     return { data: json };
         // }
         if(resource === 'user') {
-            if (params.data.avatar_url && params.data.avatar_url.rawFile) {
-                // Upload image to imgBB
-                const avatarUrl = await imgUpload(params.data.avatar_url);
-                params.data.avatar_url = avatarUrl;
-            }
-            const { json } = await httpClient(`${apiUrl}/${resource}`, {
-                method: 'POST', // or 'PATCH' depending on your API
+            const { json } = await httpClient(`${apiUrl}/admin/users`, {
+                method: 'POST',
                 body: JSON.stringify(params.data),
                 headers: new Headers({
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
                 }),
             });
-            if (json.statusCodeValue === 400) {
-                throw new Error(json.body || 'Bad Request');
-            }
-            return { data: { ...json.data, id: json.id } };
+            return { data: json.data };
         }
         else {
             const { json } = await httpClient(`${apiUrl}/${resource}`, {
@@ -148,29 +173,20 @@ export const dataProvider: DataProvider = {
         //     return { data: json };
         // }
         if (resource === 'user') {
-            if (params.data.avatar_url && params.data.avatar_url.rawFile) {
-                // Upload image to imgBB
-                const avatarUrl = await imgUpload(params.data.avatar_url);
-                params.data.avatar_url = avatarUrl;
+            // Không gửi password rỗng để backend giữ nguyên mật khẩu cũ
+            const body = { ...params.data };
+            if (!body.password) {
+                delete body.password;
             }
-            if(params.data.role.id === 1) {
-                params.data.role = {id: 1, name: 'ADMIN'}
-            } else if(params.data.role.id === 2) {
-                params.data.role = {id: 2, name: 'USER'}
-            }
-            
-            const { json } = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
+            const { json } = await httpClient(`${apiUrl}/admin/users/${params.id}`, {
                 method: 'PUT',
                 headers: new Headers({
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
                 }),
-                body: JSON.stringify(params.data)
-                
-                
+                body: JSON.stringify(body),
             });
-            console.log(params.data);
-            return { data: { ...json.data, id: json.id } };
+            return { data: json.data };
         }
         else {
             const { json } = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
@@ -186,14 +202,34 @@ export const dataProvider: DataProvider = {
     },
 // @ts-ignore
     delete: async (resource: any, params: any) => {
-        const {json} = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
+        const url = resource === 'user'
+            ? `${apiUrl}/admin/users/${params.id}`
+            : `${apiUrl}/${resource}/${params.id}`;
+        await httpClient(url, {
             method: 'DELETE',
             headers: new Headers({
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             }),
-        })
-        return {data: json}
+        });
+        // react-admin cần record vừa xóa; backend trả data=null nên tự dựng lại
+        return { data: { ...params.previousData, id: params.id } };
+    },
+// @ts-ignore
+    deleteMany: async (resource: any, params: any) => {
+        const base = resource === 'user' ? `${apiUrl}/admin/users` : `${apiUrl}/${resource}`;
+        await Promise.all(
+            params.ids.map((id: any) =>
+                httpClient(`${base}/${id}`, {
+                    method: 'DELETE',
+                    headers: new Headers({
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    }),
+                })
+            )
+        );
+        return { data: params.ids };
     },
 
 
