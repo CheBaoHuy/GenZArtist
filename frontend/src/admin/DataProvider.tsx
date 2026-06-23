@@ -8,8 +8,14 @@ const resourceBase = (resource: string) => {
     if (resource === 'product') return `${apiUrl}/admin/products`;
     if (resource === 'category') return `${apiUrl}/admin/categories`;
     if (resource === 'order') return `${apiUrl}/admin/orders`;
+    if (resource === 'product-review') return `${apiUrl}/admin/product-reviews`;
+    if (resource === 'author-review') return `${apiUrl}/admin/author-reviews`;
     return `${apiUrl}/${resource}`;
 };
+
+// Hai loại đánh giá dùng chung envelope { data: { reviews, pagination } }
+const isReviewResource = (resource: string) =>
+    resource === 'product-review' || resource === 'author-review';
 
 // Wrapper tự động đính kèm JWT (Bearer) vào mọi request gọi tới backend.
 // Các endpoint /admin/** yêu cầu quyền ADMIN nên bắt buộc phải có header này.
@@ -81,6 +87,17 @@ export const dataProvider: DataProvider = {
                 total: json.data.pagination.totalItems,
             };
         }
+        // Đánh giá sản phẩm / tác giả: envelope { data: { reviews, pagination } }
+        if (isReviewResource(resource)) {
+            const { json } = await httpClient(
+                `${resourceBase(resource)}?${fetchUtils.queryParameters({ page, size: perPage })}`,
+                { method: 'GET' }
+            );
+            return {
+                data: json.data.reviews,
+                total: json.data.pagination.totalItems,
+            };
+        }
         const { field = 'id', order = 'ASC' } = params.sort || {}; // Lấy thông tin sắp xếp
         const query = {
             sortBy: field, // Trường cần sắp xếp
@@ -127,6 +144,12 @@ export const dataProvider: DataProvider = {
                 method: 'GET',
             });
             return { data: { ...json.data, id: json.data.orderId } };
+        }
+        if (isReviewResource(resource)) {
+            const { json } = await httpClient(`${resourceBase(resource)}/${params.id}`, {
+                method: 'GET',
+            });
+            return { data: json.data };
         }
         const {json} = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'GET',
@@ -175,6 +198,17 @@ export const dataProvider: DataProvider = {
                 }),
             });
             return { data: { ...json.data, id: json.data.orderId } };
+        }
+        if (isReviewResource(resource)) {
+            const { json } = await httpClient(`${resourceBase(resource)}`, {
+                method: 'POST',
+                body: JSON.stringify(params.data),
+                headers: new Headers({
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                }),
+            });
+            return { data: json.data };
         }
         if(resource === 'user') {
             const { json } = await httpClient(`${apiUrl}/admin/users`, {
@@ -236,6 +270,17 @@ export const dataProvider: DataProvider = {
                 body: JSON.stringify(params.data),
             });
             return { data: { ...json.data, id: json.data.orderId } };
+        }
+        if (isReviewResource(resource)) {
+            const { json } = await httpClient(`${resourceBase(resource)}/${params.id}`, {
+                method: 'PUT',
+                headers: new Headers({
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                }),
+                body: JSON.stringify(params.data),
+            });
+            return { data: json.data };
         }
         if (resource === 'user') {
             // Không gửi password rỗng để backend giữ nguyên mật khẩu cũ

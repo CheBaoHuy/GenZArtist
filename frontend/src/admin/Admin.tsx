@@ -18,6 +18,7 @@ import {
     Category,
     Receipt,
     RateReview,
+    Person,
 
 } from "@mui/icons-material";
 
@@ -42,7 +43,13 @@ import { OrderList } from "./order/OrderList";
 import { OrderEdit } from "./order/OrderEdit";
 import { OrderCreate } from "./order/OrderCreate";
 
-import { ReviewList } from "./review/ReviewList";
+import { ProductReviewList } from "./review/ProductReviewList";
+import { ProductReviewEdit } from "./review/ProductReviewEdit";
+import { ProductReviewCreate } from "./review/ProductReviewCreate";
+
+import { AuthorReviewList } from "./review/AuthorReviewList";
+import { AuthorReviewEdit } from "./review/AuthorReviewEdit";
+import { AuthorReviewCreate } from "./review/AuthorReviewCreate";
 
 
 
@@ -90,9 +97,15 @@ const CustomMenu = () => (
 
 
         <MenuItemLink
-            to="/admin/review"
-            primaryText="Đánh giá"
+            to="/admin/product-review"
+            primaryText="Đánh giá sản phẩm"
             leftIcon={<RateReview />}
+        />
+
+        <MenuItemLink
+            to="/admin/author-review"
+            primaryText="Đánh giá tác giả"
+            leftIcon={<Person />}
         />
 
 
@@ -160,10 +173,21 @@ export const Manager = () => {
 
 
             <Resource
-                name="review"
-                list={ReviewList}
+                name="product-review"
+                list={ProductReviewList}
                 show={ShowGuesser}
-                options={{ label: "Đánh giá" }}
+                edit={ProductReviewEdit}
+                create={ProductReviewCreate}
+                options={{ label: "Đánh giá sản phẩm" }}
+            />
+
+            <Resource
+                name="author-review"
+                list={AuthorReviewList}
+                show={ShowGuesser}
+                edit={AuthorReviewEdit}
+                create={AuthorReviewCreate}
+                options={{ label: "Đánh giá tác giả" }}
             />
 
 
