@@ -40,6 +40,7 @@ import { CategoryCreate } from "./category/CategoryCreate";
 
 import { OrderList } from "./order/OrderList";
 import { OrderEdit } from "./order/OrderEdit";
+import { OrderCreate } from "./order/OrderCreate";
 
 import { ReviewList } from "./review/ReviewList";
 
@@ -152,6 +153,7 @@ export const Manager = () => {
                 list={OrderList}
                 show={ShowGuesser}
                 edit={OrderEdit}
+                create={OrderCreate}
                 options={{ label: "Đơn hàng" }}
             />
 

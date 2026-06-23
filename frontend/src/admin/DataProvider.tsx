@@ -7,6 +7,7 @@ const resourceBase = (resource: string) => {
     if (resource === 'user') return `${apiUrl}/admin/users`;
     if (resource === 'product') return `${apiUrl}/admin/products`;
     if (resource === 'category') return `${apiUrl}/admin/categories`;
+    if (resource === 'order') return `${apiUrl}/admin/orders`;
     return `${apiUrl}/${resource}`;
 };
 
@@ -65,6 +66,21 @@ export const dataProvider: DataProvider = {
                 total: json.data.length,
             };
         }
+        // Đơn hàng: id là chuỗi orderId nên cần map orderId -> id cho react-admin
+        if (resource === 'order') {
+            const orderQuery: any = { page, size: perPage };
+            if (params.filter && params.filter.orderStatus) {
+                orderQuery.status = params.filter.orderStatus;
+            }
+            const { json } = await httpClient(
+                `${apiUrl}/admin/orders?${fetchUtils.queryParameters(orderQuery)}`,
+                { method: 'GET' }
+            );
+            return {
+                data: json.data.orders.map((o: any) => ({ ...o, id: o.orderId })),
+                total: json.data.pagination.totalItems,
+            };
+        }
         const { field = 'id', order = 'ASC' } = params.sort || {}; // Lấy thông tin sắp xếp
         const query = {
             sortBy: field, // Trường cần sắp xếp
@@ -106,6 +122,12 @@ export const dataProvider: DataProvider = {
             });
             return { data: json.data };
         }
+        if (resource === 'order') {
+            const { json } = await httpClient(`${apiUrl}/admin/orders/${params.id}`, {
+                method: 'GET',
+            });
+            return { data: { ...json.data, id: json.data.orderId } };
+        }
         const {json} = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'GET',
             headers: new Headers({
@@ -142,6 +164,17 @@ export const dataProvider: DataProvider = {
                 }),
             });
             return { data: json.data };
+        }
+        if (resource === 'order') {
+            const { json } = await httpClient(`${apiUrl}/admin/orders`, {
+                method: 'POST',
+                body: JSON.stringify(params.data),
+                headers: new Headers({
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                }),
+            });
+            return { data: { ...json.data, id: json.data.orderId } };
         }
         if(resource === 'user') {
             const { json } = await httpClient(`${apiUrl}/admin/users`, {
@@ -192,6 +225,17 @@ export const dataProvider: DataProvider = {
                 body: JSON.stringify(params.data),
             });
             return { data: json.data };
+        }
+        if (resource === 'order') {
+            const { json } = await httpClient(`${apiUrl}/admin/orders/${params.id}`, {
+                method: 'PUT',
+                headers: new Headers({
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                }),
+                body: JSON.stringify(params.data),
+            });
+            return { data: { ...json.data, id: json.data.orderId } };
         }
         if (resource === 'user') {
             // Không gửi password rỗng để backend giữ nguyên mật khẩu cũ

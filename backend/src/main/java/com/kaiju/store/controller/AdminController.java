@@ -72,9 +72,34 @@ public class AdminController {
 
     @GetMapping("/orders")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getOrders(
+            @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(new ApiResponse<>("success", null, orderService.getAllOrders(page, size)));
+        return ResponseEntity.ok(new ApiResponse<>("success", null, orderService.getAllOrders(status, page, size)));
+    }
+
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getOrder(@PathVariable String id) {
+        return ResponseEntity.ok(new ApiResponse<>("success", null, orderService.getAdminOrderDetail(id)));
+    }
+
+    @PostMapping("/orders")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> createOrder(@RequestBody Map<String, Object> request) {
+        Map<String, Object> created = orderService.adminCreateOrder(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>("success", "Tạo đơn hàng thành công.", created));
+    }
+
+    @PutMapping("/orders/{id}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> updateOrder(@PathVariable String id, @RequestBody Map<String, Object> request) {
+        Map<String, Object> updated = orderService.adminUpdateOrder(id, request);
+        return ResponseEntity.ok(new ApiResponse<>("success", "Cập nhật đơn hàng thành công.", updated));
+    }
+
+    @DeleteMapping("/orders/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable String id) {
+        orderService.adminDeleteOrder(id);
+        return ResponseEntity.ok(new ApiResponse<>("success", "Xóa đơn hàng thành công.", null));
     }
 
     @PutMapping("/products/{id}/status")
