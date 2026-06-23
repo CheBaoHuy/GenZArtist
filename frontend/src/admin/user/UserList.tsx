@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    BulkDeleteButton,
     Datagrid,
     DateField,
     DeleteButton,
@@ -47,7 +48,10 @@ export const UserList = () => {
 
     return (
         <List aside={<UserFilterSidebar />}>
-            <Datagrid rowClick="edit">
+            <Datagrid
+                rowClick="edit"
+                bulkActionButtons={<BulkDeleteButton mutationMode="pessimistic" />}
+            >
                 <TextField source="id" label="ID" />
                 <EmailField source="email" label="Email" />
                 <TextField source="fullName" label="Họ và tên" />
@@ -69,7 +73,11 @@ export const UserList = () => {
                 />
                 <DateField source="createdAt" label="Ngày tạo" showTime />
                 <EditButton />
-                <DeleteButton />
+                <DeleteButton
+                    mutationMode="pessimistic"
+                    confirmTitle="Xóa người dùng"
+                    confirmContent="Bạn có chắc chắn muốn xóa người dùng này không?"
+                />
             </Datagrid>
         </List>
     );

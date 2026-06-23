@@ -20,7 +20,7 @@ const STATUS_CHOICES = [
 ];
 
 export const UserCreate = () => (
-    <Create>
+    <Create redirect="list">
         <SimpleForm>
             <TextInput source="email" label="Email" type="email" validate={required()} fullWidth />
             <PasswordInput source="password" label="Mật khẩu" validate={required()} fullWidth />

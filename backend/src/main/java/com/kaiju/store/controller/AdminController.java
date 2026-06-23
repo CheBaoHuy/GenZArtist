@@ -77,4 +77,28 @@ public class AdminController {
         productService.updateProductStatus(id, request.get("status"));
         return ResponseEntity.ok(new ApiResponse<>("success", "Cập nhật trạng thái sản phẩm thành công.", null));
     }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(new ApiResponse<>("success", null, productService.getAdminProductDetail(id)));
+    }
+
+    @PostMapping("/products")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> createProduct(@RequestBody Map<String, Object> request) {
+        Map<String, Object> created = productService.createProduct(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>("success", "Tạo sản phẩm thành công.", created));
+    }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> updateProduct(@PathVariable Long id, @RequestBody Map<String, Object> request) {
+        Map<String, Object> updated = productService.updateProduct(id, request);
+        return ResponseEntity.ok(new ApiResponse<>("success", "Cập nhật sản phẩm thành công.", updated));
+    }
+
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.ok(new ApiResponse<>("success", "Xóa sản phẩm thành công.", null));
+    }
 }
