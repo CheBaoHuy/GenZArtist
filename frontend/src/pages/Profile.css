@@ -20,6 +20,7 @@
 .cover-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,#0b0b1a 100%)}
 
 /* ── HEADER ── */
+
 .profile-header-wrap{max-width:1100px;margin:-80px auto 0;padding:0 2rem;position:relative;z-index:2}
 .profile-header{display:flex;align-items:flex-end;gap:1.75rem;flex-wrap:wrap;margin-bottom:1.5rem}
 .profile-avatar-wrap{position:relative;flex-shrink:0}
@@ -189,4 +190,12 @@
 .form-actions button[type="button"] {
   background: rgba(255, 255, 255, 0.08);
   color: #f1f1f1;
+}
+
+.pf-nav .pf-nav-right .menu_item{
+  list-style: none;
+}
+
+#manager_navigate{
+  list-style: none;
 }

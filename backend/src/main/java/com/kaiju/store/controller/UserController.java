@@ -1,5 +1,6 @@
 package com.kaiju.store.controller;
 
+import com.kaiju.store.dto.UserDto;
 import com.kaiju.store.model.User;
 import com.kaiju.store.repository.ApiResponse;
 import com.kaiju.store.service.UserService;
@@ -15,8 +16,11 @@ import java.util.Map;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    @Autowired
     private UserService userService;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/profile")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getProfile() {
@@ -39,4 +43,5 @@ public class UserController {
         Map<String, Object> updatedUser = userService.updateProfile(currentUser, request);
         return ResponseEntity.ok(new ApiResponse<>("success", "Cập nhật thông tin cá nhân thành công.", updatedUser));
     }
+
 }

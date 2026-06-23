@@ -9,8 +9,6 @@ import {NewUserStats} from "./NewUserStats";
 import {PendingOrders} from "./PendingOrders";
 import {InfoCard} from "./InfoCard";
 import {PendingReviews} from "./PendingReview";
-import {FaShoppingCart} from "react-icons/fa";
-import { log } from "console";
 
 const Dashboard = () => {
     const firstDayOfMonth  = startOfMonth(subMonths(new Date(), 1))
@@ -92,27 +90,27 @@ const Dashboard = () => {
     }, [orders]);
     return (
         <Grid container spacing={2}>
-            <Grid item md={8}>
+            <Grid size={{ md: 8 }}>
                 <Grid container spacing={1} style={{ padding: '20px' }}>
-                    <Grid item md={6}>
+                    <Grid size={{ md: 6 }}>
                         <InfoCard icon={<Person/>}
                                   title={"Doanh thu tháng trước"}
                                   iconColor={"purple"}
                                   content={formatToVNPrice(getRevenueOfPreviousMonth)}/>
                     </Grid>
-                    <Grid item md={6}>
+                    <Grid size={{ md: 6 }}>
                         <InfoCard icon={<Person/>}
                                   title={"Người dùng mới"}
                                   iconColor={"blue"}
                                   content={useUsersByMonth().length}/>
                     </Grid>
-                    <Grid item md={6}>
+                    <Grid size={{ md: 6 }}>
                         <InfoCard icon={<ShoppingCart/>}
                                   title={"Đơn hàng mới"}
                                   iconColor={"red"}
                                   content={useUsersByMonth().length}/>
                     </Grid>
-                    <Grid item md={6}>
+                    <Grid size={{ md: 6 }}>
                         <InfoCard icon={<RateReview/>}
                                   title={"Đánh giá mới"}
                                   iconColor={"green"}
@@ -130,7 +128,7 @@ const Dashboard = () => {
                     </LineChart>
                 </ResponsiveContainer>
             </Grid>
-            <Grid item md={4}>
+            <Grid size={{ md: 4 }}>
                 <Box>
                     {/*<NewUserStats newUsersList={useUsersByMonth()}/>*/}
                     <PendingOrders pendingOrders={usePendingOrders}/>

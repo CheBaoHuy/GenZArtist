@@ -7,7 +7,9 @@ import ArtworkDetail from './pages/ArtworkDetail';
 import Cart          from './pages/Cart';
 import Checkout      from './pages/Checkout';
 import { CartProvider } from './context/CartContext';
+// import {Manager} from "./admin/Admin";
 import './App.css';
+import {Manager} from "./admin/Admin";
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
           <Route path="/artwork/:id"        element={<ArtworkDetail />} />
           <Route path="/cart"               element={<Cart />}          />
           <Route path="/checkout"           element={<Checkout />}      />
+          <Route path="/admin/*"            element={<Manager />}       />
           <Route path="*"                   element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

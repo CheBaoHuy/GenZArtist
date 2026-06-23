@@ -7,8 +7,8 @@ const httpClient = fetchUtils.fetchJson;
 export const dataProvider: DataProvider = {
     // @ts-ignore
     getList: async (resource, params) => {
-        const { page, perPage } = params.pagination; // Lấy thông tin phân trang
-        const { field, order } = params.sort; // Lấy thông tin sắp xếp
+        const { page = 1, perPage = 10 } = params.pagination || {}; // Lấy thông tin phân trang
+        const { field = 'id', order = 'ASC' } = params.sort || {}; // Lấy thông tin sắp xếp
         const query = {
             sortBy: field, // Trường cần sắp xếp
             sortDir: order, // Thứ tự sắp xếp
@@ -46,10 +46,10 @@ export const dataProvider: DataProvider = {
     // @ts-ignore
     create: async (resource: any, params: any) => {
         if(resource === 'product') {
-            if (params.data.image && params.data.image.rawFile) {
+            if (params.data.image_url && params.data.image_url.rawFile) {
                 // Upload image to imgBB
-                const imageUrl = await imgUpload(params.data.image);
-                params.data.image = imageUrl;
+                const imageUrl = await imgUpload(params.data.image_url);
+                params.data.image_url = imageUrl;
             }
             const {data: category} = await dataProvider.getOne('category', params.data.category);
             params.data.category = category;
@@ -64,26 +64,26 @@ export const dataProvider: DataProvider = {
             });
             return { data: json };
         }
-        if (resource === 'category') {
-            if (params.data.parentCategory.id === null || params.data.parentCategory.id === undefined ) {
-                params.data.parentCategory = null
-            }
-            const { json } = await httpClient(`${apiUrl}/${resource}`, {
-                method: 'POST',
-                body: JSON.stringify(params.data),
-                headers: new Headers({
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                }),
-
-            });
-            return { data: json };
-        }
+        // if (resource === 'category') {
+        //     if (params.data.parentCategory.id === null || params.data.parentCategory.id === undefined ) {
+        //         params.data.parentCategory = null
+        //     }
+        //     const { json } = await httpClient(`${apiUrl}/${resource}`, {
+        //         method: 'POST',
+        //         body: JSON.stringify(params.data),
+        //         headers: new Headers({
+        //             'Content-Type': 'application/json',
+        //             Accept: 'application/json',
+        //         }),
+        //
+        //     });
+        //     return { data: json };
+        // }
         if(resource === 'user') {
-            if (params.data.avatar && params.data.avatar.rawFile) {
+            if (params.data.avatar_url && params.data.avatar_url.rawFile) {
                 // Upload image to imgBB
-                const avatarUrl = await imgUpload(params.data.avatar);
-                params.data.avatar = avatarUrl;
+                const avatarUrl = await imgUpload(params.data.avatar_url);
+                params.data.avatar_url = avatarUrl;
             }
             const { json } = await httpClient(`${apiUrl}/${resource}`, {
                 method: 'POST', // or 'PATCH' depending on your API
@@ -97,23 +97,6 @@ export const dataProvider: DataProvider = {
                 throw new Error(json.body || 'Bad Request');
             }
             return { data: { ...json.data, id: json.id } };
-        }
-        if (resource === 'blog'){
-            if (params.data.thumbnail && params.data.thumbnail.rawFile) {
-                // Upload image to imgBB
-                const thumbnailUrl = await imgUpload(params.data.thumbnail);
-                params.data.thumbnail = thumbnailUrl;
-            }
-            const { json } = await httpClient(`${apiUrl}/${resource}`, {
-                method: 'POST', // or 'PATCH' depending on your API
-                body: JSON.stringify(params.data),
-                headers: new Headers({
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                }),
-
-            });
-            return { data: json };
         }
         else {
             const { json } = await httpClient(`${apiUrl}/${resource}`, {
@@ -134,10 +117,10 @@ export const dataProvider: DataProvider = {
     update: async (resource: any, params: any) => {
         if (resource === 'product') {
             const { id, data } = params;
-            if (data.image && data.image.rawFile) {
+            if (data.image_url && data.image_url.rawFile) {
                 // Upload image to imgBB
-                const imageUrl = await imgUpload(data.image);
-                data.image = imageUrl;
+                const imageUrl = await imgUpload(data.image_url);
+                data.image_url = imageUrl;
             }
 
             const { json } = await httpClient(`${apiUrl}/${resource}/${id}`, {
@@ -150,25 +133,25 @@ export const dataProvider: DataProvider = {
             });
             return { data: json.data };
         }
-        if (resource === 'category') {
-            if (params.data.parentCategory.id === null) {
-                params.data.parentCategory = null
-            }
-            const { json } = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
-                method: 'PUT',
-                headers: new Headers({
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                }),
-                body: JSON.stringify(params.data),
-            });
-            return { data: json };
-        }
+        // if (resource === 'category') {
+        //     if (params.data.parentCategory.id === null) {
+        //         params.data.parentCategory = null
+        //     }
+        //     const { json } = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
+        //         method: 'PUT',
+        //         headers: new Headers({
+        //             'Content-Type': 'application/json',
+        //             Accept: 'application/json',
+        //         }),
+        //         body: JSON.stringify(params.data),
+        //     });
+        //     return { data: json };
+        // }
         if (resource === 'user') {
-            if (params.data.avatar && params.data.avatar.rawFile) {
+            if (params.data.avatar_url && params.data.avatar_url.rawFile) {
                 // Upload image to imgBB
-                const avatarUrl = await imgUpload(params.data.avatar);
-                params.data.avatar = avatarUrl;
+                const avatarUrl = await imgUpload(params.data.avatar_url);
+                params.data.avatar_url = avatarUrl;
             }
             if(params.data.role.id === 1) {
                 params.data.role = {id: 1, name: 'ADMIN'}
@@ -188,23 +171,6 @@ export const dataProvider: DataProvider = {
             });
             console.log(params.data);
             return { data: { ...json.data, id: json.id } };
-        }
-        if(resource==='blog') {
-            if (params.data.thumbnail && params.data.thumbnail.rawFile) {
-                // Upload image to imgBB
-                const thumbnailUrl = await imgUpload(params.data.thumbnail);
-                params.data.thumbnail = thumbnailUrl;
-            }
-            const { json } = await httpClient(`${apiUrl}/${resource}/${params.id}`, {
-                method: 'PUT',
-                headers: new Headers({
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                }),
-                body: JSON.stringify(params.data),
-            });
-            window.location.href = `/admin/${resource}`
-            return { data: json };
         }
         else {
             const { json } = await httpClient(`${apiUrl}/${resource}/${params.id}`, {

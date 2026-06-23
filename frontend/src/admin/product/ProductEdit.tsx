@@ -44,7 +44,7 @@ export const ProductEdit = () => {
                 />
                 <TextInput source="title"/>
                 <ImageField source="image" label="Ảnh gốc"/>
-                <ImageInput source="image" label={"Thêm ảnh mới"} accept="image/*">
+                <ImageInput source="image" label={"Thêm ảnh mới"} accept={{ 'image/*': [] }}>
                     <ImageField source="src"/>
                 </ImageInput>
                 <NumberInput source="oldPrice"/>

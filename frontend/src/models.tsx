@@ -14,7 +14,7 @@ export interface User {
 export interface CartState {
     cartItems: Product[];
     cartTotalQuantity: number;
-    cartTotal
+    cartTotal: number;
 }
 
 export interface Product {

@@ -14,7 +14,7 @@ export const UserEdit = ()=> {
                 <NumberInput source={"phone"} label={"Số điện thoại"}/>
                 <TextInput source={"fullName"} label={"Họ và tên"}/>
                 <ImageField source="avatar" label="Ảnh gốc"/>
-                <ImageInput source="avatar" label={"Thêm ảnh mới"} accept="image/*">
+                <ImageInput source="avatar" label={"Thêm ảnh mới"} accept={{ 'image/*': [] }}>
                     <ImageField source="src"/>
                 </ImageInput>
                 <SelectInput

@@ -21,11 +21,11 @@ const handleSubmit = async (e) => {
   try {
     const response = await axios.post('http://localhost:8080/api/v1/auth/login', formData);
     const accessToken = response.data.data.accessToken;
+    const role = response.data.data.user.role;
     const fullName = response.data.data.user.fullName;
-
     localStorage.setItem('token', accessToken);
+    localStorage.setItem('role', role);
     localStorage.setItem('user', JSON.stringify({ fullName }));
-
     navigate('/dashboard');
   } catch (error) {
     console.error(error);
