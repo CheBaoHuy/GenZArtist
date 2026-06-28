@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +126,135 @@ public class ProductService {
     public Product findById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
+    }
+
+    // ===== Admin CRUD =====
+
+    public Map<String, Object> getAdminProductDetail(Long id) {
+        return toAdminDetail(findById(id));
+    }
+
+    @Transactional
+    public Map<String, Object> createProduct(Map<String, Object> request) {
+        String name = asString(request.get("name"));
+        if (name == null || name.isBlank()) {
+            throw new RuntimeException("Tên sản phẩm không được để trống.");
+        }
+
+        Product product = new Product();
+        product.setName(name);
+        product.setDescription(asString(request.get("description")));
+        product.setPrice(parsePrice(request.get("price")));
+        product.setImageUrl(asString(request.get("imageUrl")));
+        product.setFileUrl(asString(request.get("fileUrl")));
+        product.setCategory(resolveCategory(request.get("categoryId")));
+        product.setStatus(parseStatus(request.get("status"), ProductStatus.APPROVED));
+
+        return toAdminDetail(productRepository.save(product));
+    }
+
+    @Transactional
+    public Map<String, Object> updateProduct(Long id, Map<String, Object> request) {
+        Product product = findById(id);
+
+        if (request.containsKey("name")) {
+            product.setName(asString(request.get("name")));
+        }
+        if (request.containsKey("description")) {
+            product.setDescription(asString(request.get("description")));
+        }
+        if (request.containsKey("price") && request.get("price") != null) {
+            product.setPrice(parsePrice(request.get("price")));
+        }
+        if (request.containsKey("imageUrl")) {
+            product.setImageUrl(asString(request.get("imageUrl")));
+        }
+        if (request.containsKey("fileUrl")) {
+            product.setFileUrl(asString(request.get("fileUrl")));
+        }
+        if (request.get("categoryId") != null) {
+            product.setCategory(resolveCategory(request.get("categoryId")));
+        }
+        if (request.get("status") != null) {
+            product.setStatus(parseStatus(request.get("status"), product.getStatus()));
+        }
+
+        return toAdminDetail(productRepository.save(product));
+    }
+
+    @Transactional
+    public void deleteProduct(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new RuntimeException("Không tìm thấy sản phẩm");
+        }
+        productRepository.deleteById(id);
+    }
+
+    private Map<String, Object> toAdminDetail(Product product) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("id", product.getId());
+        item.put("name", product.getName());
+        item.put("description", product.getDescription());
+        item.put("price", product.getPrice());
+        item.put("imageUrl", product.getImageUrl());
+        item.put("fileUrl", product.getFileUrl());
+        item.put("viewCount", product.getViewCount());
+        item.put("status", product.getStatus() != null ? product.getStatus().name() : null);
+        item.put("createdAt", product.getCreatedAt());
+        if (product.getCategory() != null) {
+            Map<String, Object> cat = new HashMap<>();
+            cat.put("id", product.getCategory().getId());
+            cat.put("name", product.getCategory().getName());
+            item.put("category", cat);
+            item.put("categoryId", product.getCategory().getId());
+        }
+        if (product.getSeller() != null) {
+            Map<String, Object> seller = new HashMap<>();
+            seller.put("id", product.getSeller().getId());
+            seller.put("fullName", product.getSeller().getFullName());
+            item.put("seller", seller);
+        }
+        return item;
+    }
+
+    private Category resolveCategory(Object categoryId) {
+        if (categoryId == null || categoryId.toString().isBlank()) {
+            return null;
+        }
+        Long id;
+        try {
+            id = Long.valueOf(categoryId.toString().trim());
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Danh mục không hợp lệ.");
+        }
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại"));
+    }
+
+    private String asString(Object value) {
+        return value == null ? null : value.toString();
+    }
+
+    private BigDecimal parsePrice(Object value) {
+        if (value == null || value.toString().isBlank()) {
+            return BigDecimal.ZERO;
+        }
+        try {
+            return new BigDecimal(value.toString().trim());
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Giá sản phẩm không hợp lệ.");
+        }
+    }
+
+    private ProductStatus parseStatus(Object value, ProductStatus fallback) {
+        if (value == null || value.toString().isBlank()) {
+            return fallback;
+        }
+        try {
+            return ProductStatus.valueOf(value.toString().trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Trạng thái sản phẩm không hợp lệ.");
+        }
     }
 
     private Map<String, Object> toListItem(Product product) {
