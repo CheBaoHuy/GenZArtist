@@ -1,19 +1,8 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Home.css';
 
-/* ── Mock data ─────────────────────────────────────── */
-const ARTWORKS = [
-  { id: 1,  title: 'Neon Dreams',        artist: 'Luna.exe',      likes: 2841, gradient: 'linear-gradient(135deg,#f72585,#7209b7)', tag: 'Digital' },
-  { id: 2,  title: 'Void Walker',        artist: 'DarkPixel',     likes: 1923, gradient: 'linear-gradient(135deg,#3a0ca3,#4cc9f0)', tag: 'Concept' },
-  { id: 3,  title: 'Cherry Blossom AI', artist: 'Sakura.psd',    likes: 3512, gradient: 'linear-gradient(135deg,#ff6b6b,#ffd93d)', tag: 'AI Art'  },
-  { id: 4,  title: 'Cyber Temple',      artist: 'GlitchGod',     likes: 987,  gradient: 'linear-gradient(135deg,#06d6a0,#118ab2)', tag: 'Pixel'   },
-  { id: 5,  title: 'Astral Drift',      artist: 'cosm0s.art',    likes: 4210, gradient: 'linear-gradient(135deg,#560bad,#f72585)', tag: 'Abstract'},
-  { id: 6,  title: 'Lo-Fi City',        artist: 'moodboard_',    likes: 2103, gradient: 'linear-gradient(135deg,#ff9a3c,#ff6b6b)', tag: 'Illus.'  },
-  { id: 7,  title: 'Glass Heart',       artist: 'cry.psd',       likes: 1678, gradient: 'linear-gradient(135deg,#4cc9f0,#7209b7)', tag: 'Digital' },
-  { id: 8,  title: 'Grunge Bloom',      artist: 'PetalRiot',     likes: 890,  gradient: 'linear-gradient(135deg,#06d6a0,#f72585)', tag: 'Mixed'   },
-  { id: 9,  title: 'Midnight Rave',     artist: 'bassline.art',  likes: 3301, gradient: 'linear-gradient(135deg,#240046,#ff6b6b)', tag: 'Digital' },
-];
+const API = 'http://localhost:8080/api/v1';
 
 const ARTISTS = [
   { id: 1, name: 'Luna.exe',     tag: '@luna.exe',     works: 142, followers: '28.4k', grad: 'linear-gradient(135deg,#f72585,#7209b7)' },
@@ -24,16 +13,16 @@ const ARTISTS = [
   { id: 6, name: 'moodboard_',  tag: '@moodboard_',   works: 94,  followers: '21.0k', grad: 'linear-gradient(135deg,#ff9a3c,#ff6b6b)' },
 ];
 
-const CATEGORIES = [
-  { label: 'Digital Art',   icon: '🖥️', count: '12.4k' },
-  { label: 'Illustration',  icon: '✏️', count: '8.9k'  },
-  { label: 'AI Generated',  icon: '🤖', count: '5.2k'  },
-  { label: 'Pixel Art',     icon: '🕹️', count: '3.7k'  },
-  { label: 'Abstract',      icon: '🌀', count: '6.1k'  },
-  { label: 'Photography',   icon: '📷', count: '4.8k'  },
-  { label: 'Concept Art',   icon: '🧠', count: '2.9k'  },
-  { label: 'Mixed Media',   icon: '🎭', count: '1.6k'  },
-];
+const CATEGORY_ICONS = {
+  '2D Concept Art': '🖌️',
+  '3D Models':      '🧊',
+  'Anime & Chibi':  '🌸',
+  'Pixel Art':      '🕹️',
+  'Digital Art':    '🖥️',
+  'Illustration':   '✏️',
+  'Abstract':       '🌀',
+  'Photography':    '📷',
+};
 
 const STATS = [
   { value: '120K+', label: 'Artists'   },
@@ -42,24 +31,57 @@ const STATS = [
   { value: '48',    label: 'Countries' },
 ];
 
+/* ── Stars ── */
+function Stars({ rating }) {
+  return (
+      <span>
+      {[1,2,3,4,5].map(n => (
+          <span key={n} style={{ color: n <= Math.round(rating) ? '#f59e0b' : 'rgba(255,255,255,.18)', fontSize: 12 }}>★</span>
+      ))}
+    </span>
+  );
+}
+
 /* ── Component ─────────────────────────────────────── */
 export default function Home() {
-  const [likedIds, setLikedIds]       = useState([]);
-  const [activeTag, setActiveTag]     = useState('All');
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen]       = useState(false);
+
   const token = localStorage.getItem('token');
   const isLoggedIn = Boolean(token);  
-  
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   const fullName = user?.fullName;
 
+  /* ── Data from API ── */
+  const [trending,   setTrending]   = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [trendingLoading, setTrendingLoading] = useState(true);
 
-  const tags = ['All', 'Digital', 'AI Art', 'Pixel', 'Abstract', 'Illus.', 'Concept', 'Mixed'];
+  /* ── Fetch trending products ── */
+  useEffect(() => {
+    fetch(`${API}/products/trending?limit=6`)
+        .then(r => r.json())
+        .then(res => {
+          if (res.status === 'success') setTrending(res.data.products || []);
+        })
+        .catch(() => {})
+        .finally(() => setTrendingLoading(false));
+  }, []);
 
-  const toggleLike = (id) =>
-    setLikedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  /* ── Fetch categories ── */
+  useEffect(() => {
+    fetch(`${API}/categories`)
+        .then(r => r.json())
+        .then(res => {
+          if (res.status === 'success') setCategories(res.data || []);
+        })
+        .catch(() => {});
+  }, []);
 
-  const filtered = activeTag === 'All' ? ARTWORKS : ARTWORKS.filter(a => a.tag === activeTag);
+  /* ── Navigate to Products with category filter ── */
+  const goToCategory = (categoryId) => {
+    navigate(`/products?category=${categoryId}`);
+  };
 
   return (
     <div className="home-page">
@@ -79,7 +101,7 @@ export default function Home() {
         <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
           <a href="#trending" className="nav-link" onClick={() => setMenuOpen(false)}>Trending</a>
           <a href="#artists"  className="nav-link" onClick={() => setMenuOpen(false)}>Artists</a>
-          <a href="#categories" className="nav-link" onClick={() => setMenuOpen(false)}>Explore</a>
+          <Link to="/products" className="nav-link" onClick={() => setMenuOpen(false)}>Explore</Link>
           {isLoggedIn ? (
             <Link to="/profile" className="nav-btn outline">{fullName}</Link>
           ) : (
@@ -98,10 +120,10 @@ export default function Home() {
       {/* ── HERO ────────────────────────────────────── */}
       <section className="hero">
         {/* floating art cards */}
-        <div className="hero-card hero-card-1" style={{ background: ARTWORKS[4].gradient }}></div>
-        <div className="hero-card hero-card-2" style={{ background: ARTWORKS[0].gradient }}></div>
-        <div className="hero-card hero-card-3" style={{ background: ARTWORKS[2].gradient }}></div>
-        <div className="hero-card hero-card-4" style={{ background: ARTWORKS[6].gradient }}></div>
+        <div className="hero-card hero-card-1" style={{ background: 'linear-gradient(135deg,#560bad,#f72585)' }}></div>
+        <div className="hero-card hero-card-2" style={{ background: 'linear-gradient(135deg,#f72585,#7209b7)' }}></div>
+        <div className="hero-card hero-card-3" style={{ background: 'linear-gradient(135deg,#ff6b6b,#ffd93d)' }}></div>
+        <div className="hero-card hero-card-4" style={{ background: 'linear-gradient(135deg,#4cc9f0,#7209b7)' }}></div>
 
         <div className="hero-content">
           <div className="hero-badge">✦ The #1 platform for Gen Z creators</div>
@@ -117,13 +139,6 @@ export default function Home() {
             <Link to="/register" className="hero-btn-primary">Start Creating →</Link>
             <a href="#trending"  className="hero-btn-secondary">Explore Artworks</a>
           </div>
-
-          <div className="hero-avatars">
-            {ARTISTS.slice(0, 5).map(a => (
-              <div key={a.id} className="hero-avatar" style={{ background: a.grad }} title={a.name}></div>
-            ))}
-            <span className="hero-avatar-text">+120K artists joined</span>
-          </div>
         </div>
       </section>
 
@@ -134,48 +149,56 @@ export default function Home() {
             <div className="section-label">🔥 Hot right now</div>
             <h2 className="section-title">Trending Artworks</h2>
           </div>
-          <div className="tag-filters">
-            {tags.map(t => (
-              <button
-                key={t}
-                className={`tag-btn ${activeTag === t ? 'active' : ''}`}
-                onClick={() => setActiveTag(t)}
-              >{t}</button>
-            ))}
-          </div>
         </div>
 
-        <div className="artworks-grid">
-          {filtered.map(art => (
-            <div className="artwork-card" key={art.id}>
-              <div className="artwork-thumb" style={{ background: art.gradient }}>
-                <div className="artwork-overlay">
-                  <button className="artwork-view-btn">View Full ↗</button>
-                </div>
-                <span className="artwork-tag">{art.tag}</span>
-              </div>
-              <div className="artwork-info">
-                <div className="artwork-meta">
-                  <div>
-                    <p className="artwork-title">{art.title}</p>
-                    <p className="artwork-artist">by {art.artist}</p>
-                  </div>
-                  <button
-                    className={`like-btn ${likedIds.includes(art.id) ? 'liked' : ''}`}
-                    onClick={() => toggleLike(art.id)}
-                    aria-label="Like"
-                  >
-                    {likedIds.includes(art.id) ? '❤️' : '🤍'}
-                    <span>{art.likes + (likedIds.includes(art.id) ? 1 : 0)}</span>
-                  </button>
-                </div>
-              </div>
+        {trendingLoading ? (
+            <div className="home-loading">
+              <div className="home-spinner"></div>
             </div>
-          ))}
-        </div>
+        ) : trending.length === 0 ? (
+            <p style={{ color:'rgba(255,255,255,.35)', textAlign:'center', padding:'3rem 0' }}>
+              Chưa có sản phẩm nào.
+            </p>
+        ) : (
+            <div className="artworks-grid">
+              {trending.map(art => (
+                  <Link to={`/artwork/${art.id}`} className="artwork-card" key={art.id}>
+                    <div className="artwork-thumb">
+                      {art.imageUrl
+                          ? <img src={art.imageUrl} alt={art.name} className="artwork-thumb-img" />
+                          : <div className="artwork-thumb-placeholder">🎨</div>
+                      }
+                      <div className="artwork-overlay">
+                        <span className="artwork-view-btn">View ↗</span>
+                      </div>
+                      {art.category && <span className="artwork-tag">{art.category.name}</span>}
+                    </div>
+                    <div className="artwork-info">
+                      <div className="artwork-meta">
+                        <div>
+                          <p className="artwork-title">{art.name}</p>
+                          <p className="artwork-artist">by {art.seller?.fullName || 'Artist'}</p>
+                          {art.avgRating > 0 && (
+                              <div className="artwork-rating">
+                                <Stars rating={art.avgRating} />
+                                <span className="artwork-rating-val">{art.avgRating.toFixed(1)}</span>
+                              </div>
+                          )}
+                        </div>
+                        <div className="artwork-price">
+                          {parseFloat(art.price).toLocaleString('vi-VN')}₫
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+              ))}
+            </div>
+        )}
 
         <div className="center-btn">
-          <button className="load-more-btn">Load More Artworks ↓</button>
+          <Link to="/products" className="load-more-btn">
+            Load More Artworks →
+          </Link>
         </div>
       </section>
 
@@ -222,16 +245,33 @@ export default function Home() {
             <div className="section-label">🗂️ Browse</div>
             <h2 className="section-title">Explore by Category</h2>
           </div>
+          <Link to="/products" className="see-all-link">Xem tất cả →</Link>
         </div>
-        <div className="categories-grid">
-          {CATEGORIES.map(c => (
-            <button className="category-card" key={c.label}>
-              <span className="cat-icon">{c.icon}</span>
-              <span className="cat-label">{c.label}</span>
-              <span className="cat-count">{c.count} works</span>
-            </button>
-          ))}
-        </div>
+
+        {categories.length === 0 ? (
+            <div className="categories-grid">
+              {/* Skeleton placeholders */}
+              {[1,2,3,4].map(n => (
+                  <div key={n} className="category-card skeleton"></div>
+              ))}
+            </div>
+        ) : (
+            <div className="categories-grid">
+              {categories.map(c => (
+                  <button
+                      key={c.id}
+                      className="category-card"
+                      onClick={() => goToCategory(c.id)}
+                  >
+                    <span className="cat-icon">{CATEGORY_ICONS[c.name] || '🎨'}</span>
+                    <span className="cat-label">{c.name}</span>
+                    {c.description && (
+                        <span className="cat-desc">{c.description.slice(0, 50)}…</span>
+                    )}
+                  </button>
+              ))}
+            </div>
+        )}
       </section>
 
       {/* ── STATS ───────────────────────────────────── */}

@@ -13,6 +13,8 @@ public class ProductDetailResponse {
     private Integer viewCount;
     private LocalDateTime createdAt;
     private SellerDto seller;
+    private Double avgRating;
+    private Long reviewCount;
 
     public ProductDetailResponse() {}
 
@@ -34,6 +36,10 @@ public class ProductDetailResponse {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public SellerDto getSeller() { return seller; }
     public void setSeller(SellerDto seller) { this.seller = seller; }
+    public Double getAvgRating() { return avgRating; }
+    public void setAvgRating(Double avgRating) { this.avgRating = avgRating; }
+    public Long getReviewCount() { return reviewCount; }
+    public void setReviewCount(Long reviewCount) { this.reviewCount = reviewCount; }
 
     public static class CategoryDto {
         private Long id;
