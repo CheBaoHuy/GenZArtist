@@ -26,4 +26,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     // Trending: top sản phẩm APPROVED sắp xếp theo view_count giảm dần
     @Query("SELECT p FROM Product p WHERE p.status = 'APPROVED' ORDER BY p.viewCount DESC")
     List<Product> findTrendingProducts(Pageable pageable);
+  
+    boolean existsByCategoryId(Long categoryId);
 }

@@ -1,61 +1,54 @@
+import React from "react";
 import {
-    BooleanInput,
-    DateInput,
     Edit,
-    ImageField, ImageInput,
+    ImageField,
     NumberInput,
+    required,
     SelectInput,
     SimpleForm,
     TextInput,
-    useGetList
-} from 'react-admin';
-import {useEffect, useState} from "react";
-import {Category} from "../../models";
+    useGetList,
+} from "react-admin";
+
+const STATUS_CHOICES = [
+    { id: "PENDING", name: "Chờ duyệt" },
+    { id: "APPROVED", name: "Đã duyệt" },
+    { id: "REJECTED", name: "Từ chối" },
+    { id: "INACTIVE", name: "Ngừng bán" },
+    { id: "BANNED", name: "Bị khóa" },
+];
 
 export const ProductEdit = () => {
-
-    const [categories, setCategories] = useState<Category[]>([])
-    const {data: listCategory} = useGetList('category', {
+    const { data: categories = [] } = useGetList("category", {
         pagination: { page: 1, perPage: 100 },
-        sort: { field: 'id', order: 'ASC' },
-    })
+        sort: { field: "id", order: "ASC" },
+    });
 
-    useEffect(()=> {
-        if (listCategory) {
-            setCategories(listCategory.filter(category => category.parentCategory !== null))
-        }
-    })
-    // const imageFile  = useWat({name: 'image'});
     return (
-        <Edit>
+        <Edit mutationMode="pessimistic">
             <SimpleForm>
-                <TextInput source="id"/>
-                {/*<NumberInput source="category.id"/>*/}
+                <TextInput source="id" label="ID" disabled />
+                <TextInput source="name" label="Tên sản phẩm" validate={required()} fullWidth />
+                <TextInput source="description" label="Mô tả" multiline fullWidth />
+                <NumberInput source="price" label="Giá (VND)" validate={required()} />
+                <ImageField source="imageUrl" label="Ảnh hiện tại" />
+                <TextInput source="imageUrl" label="Ảnh preview (URL)" fullWidth />
+                <TextInput source="fileUrl" label="File gốc (URL)" fullWidth />
                 <SelectInput
-                    source="category.id"
+                    source="categoryId"
                     label="Danh mục"
-                    choices={categories.map(category => ({
-                        id: category.id,
-                        name: category.name
-                    }))}
+                    choices={categories}
                     optionValue="id"
                     optionText="name"
-                    fullWidth
+                    validate={required()}
                 />
-                <TextInput source="title"/>
-                <ImageField source="image" label="Ảnh gốc"/>
-                <ImageInput source="image" label={"Thêm ảnh mới"} accept={{ 'image/*': [] }}>
-                    <ImageField source="src"/>
-                </ImageInput>
-                <NumberInput source="oldPrice"/>
-                <NumberInput source="currentPrice"/>
-                <NumberInput source="quantity"/>
-                <TextInput source="description"/>
-                <TextInput source="author"/>
-                <TextInput source="publisher"/>
-                <NumberInput source="publishYear"/>
-                <BooleanInput source="active"/>
+                <SelectInput
+                    source="status"
+                    label="Trạng thái"
+                    choices={STATUS_CHOICES}
+                    validate={required()}
+                />
             </SimpleForm>
         </Edit>
-    )
+    );
 };

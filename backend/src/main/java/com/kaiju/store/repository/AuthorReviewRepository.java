@@ -1,11 +1,9 @@
 package com.kaiju.store.repository;
 
+import com.kaiju.store.model.AuthorReview;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.kaiju.store.model.Category;
-
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long> {
-    boolean existsByName(String name);
+public interface AuthorReviewRepository extends JpaRepository<AuthorReview, Long> {
 }
