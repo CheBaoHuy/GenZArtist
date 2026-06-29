@@ -21,13 +21,27 @@ public class ProductController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> listProducts(
             @RequestParam(required = false) Long categoryId,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "12") int size) {
-        return ResponseEntity.ok(new ApiResponse<>("success", null, productService.listApprovedProducts(categoryId, page, size)));
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "newest") String sort) {
+        return ResponseEntity.ok(new ApiResponse<>("success", null,
+                productService.listApprovedProducts(categoryId, page, size, sort)));
     }
 
+    /**
+     * Top sản phẩm trending — dùng cho Home section
+     * Mặc định trả 6 sản phẩm có view_count cao nhất
+     */
+    @GetMapping("/trending")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getTrending(
+            @RequestParam(defaultValue = "6") int limit) {
+        return ResponseEntity.ok(new ApiResponse<>("success", null,
+                productService.getTrendingProducts(limit)));
+    }
+
+    /** Chi tiết sản phẩm — tự động tăng view_count */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductDetailResponse>> getProductById(@PathVariable Long id) {
-        ProductDetailResponse product = productService.getProductDetail(id);
-        return ResponseEntity.ok(new ApiResponse<>("success", null, product));
+        return ResponseEntity.ok(new ApiResponse<>("success", null,
+                productService.getProductDetail(id)));
     }
 }

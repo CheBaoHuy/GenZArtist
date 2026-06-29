@@ -187,3 +187,42 @@
   .footer-top{flex-direction:column;gap:2rem}
   .footer-links-group{gap:1.5rem}
 }
+
+/* ── Loading spinner cho trending ── */
+.home-loading{display:flex;justify-content:center;padding:4rem 0}
+.home-spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.08);border-top-color:#a855f7;border-radius:50%;animation:homeSpinAnim .8s linear infinite}
+@keyframes homeSpinAnim{to{transform:rotate(360deg)}}
+
+/* ── Artwork card: image support ── */
+.artwork-thumb{position:relative;aspect-ratio:4/3;overflow:hidden;background:#12122a}
+.artwork-thumb-img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.artwork-card:hover .artwork-thumb-img{transform:scale(1.06)}
+.artwork-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;background:linear-gradient(135deg,#1a1a35,#0d0d1f)}
+.artwork-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;display:flex;align-items:center;justify-content:center;transition:opacity .3s}
+.artwork-card:hover .artwork-overlay{opacity:1}
+.artwork-view-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:.45rem 1rem;border-radius:10px;font-size:.82rem;font-weight:700;backdrop-filter:blur(8px)}
+.artwork-tag{position:absolute;top:.6rem;left:.6rem;background:rgba(11,11,26,.8);border:1px solid rgba(168,85,247,.3);color:#c084fc;font-size:.68rem;font-weight:700;padding:.18rem .5rem;border-radius:6px;letter-spacing:.03em;backdrop-filter:blur(8px)}
+
+/* ── Artwork info ── */
+.artwork-info{padding:.85rem 1rem .95rem}
+.artwork-meta{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem}
+.artwork-title{font-size:.92rem;font-weight:700;color:#f1f1f1;margin-bottom:.18rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.artwork-artist{font-size:.77rem;color:rgba(255,255,255,.4)}
+.artwork-rating{display:flex;align-items:center;gap:.25rem;margin-top:.3rem}
+.artwork-rating-val{font-size:.74rem;color:rgba(255,255,255,.45);font-weight:600}
+.artwork-price{font-size:.92rem;font-weight:800;color:#c084fc;white-space:nowrap;flex-shrink:0}
+
+/* ── Load more btn as Link ── */
+.load-more-btn{display:inline-block;padding:.75rem 2rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:rgba(255,255,255,.7);font-size:.9rem;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:none;transition:all .25s}
+.load-more-btn:hover{background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.4);color:#c084fc;transform:translateY(-2px)}
+
+/* ── Category card: improved ── */
+.category-card{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;padding:1.25rem 1.1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;cursor:pointer;transition:all .25s;font-family:'Inter',sans-serif;text-align:left;width:100%}
+.category-card:hover{background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.35);transform:translateY(-3px)}
+.category-card.skeleton{min-height:100px;background:rgba(255,255,255,.03);animation:skelPulse 1.5s ease-in-out infinite}
+@keyframes skelPulse{0%,100%{opacity:.5}50%{opacity:.8}}
+.cat-icon{font-size:1.75rem;line-height:1}
+.cat-label{font-size:.92rem;font-weight:700;color:#f1f1f1}
+.cat-desc{font-size:.75rem;color:rgba(255,255,255,.35);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cat-count{font-size:.75rem;color:rgba(168,85,247,.7);font-weight:600}
+
