@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { vnd } from '../utils/currency';
 import './Cart.css';
 
 export default function Cart() {
@@ -12,15 +13,15 @@ export default function Cart() {
 
   const applyPromo = () => {
     if (promo.toUpperCase() === 'GENZ20') {
-      setDiscount(0.2); setPromoMsg('✅ 20% discount applied!');
+      setDiscount(0.2); setPromoMsg('✅ Đã áp dụng giảm 20%!');
     } else if (promo.toUpperCase() === 'ARTIST10') {
-      setDiscount(0.1); setPromoMsg('✅ 10% discount applied!');
+      setDiscount(0.1); setPromoMsg('✅ Đã áp dụng giảm 10%!');
     } else {
-      setDiscount(0); setPromoMsg('❌ Invalid promo code');
+      setDiscount(0); setPromoMsg('❌ Mã giảm giá không hợp lệ');
     }
   };
 
-  const shipping  = items.some(i => i.type === 'Print') ? 5.99 : 0;
+  const shipping  = items.some(i => i.type === 'Print') ? 30000 : 0;
   const subtotal  = total;
   const discountAmt = subtotal * discount;
   const finalTotal  = subtotal - discountAmt + shipping;
@@ -30,29 +31,29 @@ export default function Cart() {
       <nav className="cart-nav">
         <Link to="/" className="cart-nav-logo">🎨 <span>GenZArtist</span></Link>
         <div className="cart-nav-steps">
-          <span className="step-item active">🛒 Cart</span>
+          <span className="step-item active">🛒 Giỏ hàng</span>
           <span className="step-sep">›</span>
-          <span className="step-item">💳 Payment</span>
+          <span className="step-item">💳 Thanh toán</span>
           <span className="step-sep">›</span>
-          <span className="step-item">✅ Done</span>
+          <span className="step-item">✅ Hoàn tất</span>
         </div>
-        <Link to="/" className="cart-nav-back">← Continue Shopping</Link>
+        <Link to="/" className="cart-nav-back">← Tiếp tục mua sắm</Link>
       </nav>
 
       <div className="cart-layout">
         {/* ── LEFT: Items ── */}
         <div className="cart-main">
           <div className="cart-title-row">
-            <h1 className="cart-title">Shopping Cart</h1>
-            <span className="cart-count">{count} {count === 1 ? 'item' : 'items'}</span>
+            <h1 className="cart-title">Giỏ hàng</h1>
+            <span className="cart-count">{count} sản phẩm</span>
           </div>
 
           {items.length === 0 ? (
             <div className="cart-empty">
               <div className="empty-icon">🛒</div>
-              <h2>Your cart is empty</h2>
-              <p>Discover amazing artworks and add them to your cart</p>
-              <Link to="/" className="empty-browse-btn">Browse Artworks →</Link>
+              <h2>Giỏ hàng của bạn đang trống</h2>
+              <p>Khám phá những tác phẩm tuyệt vời và thêm vào giỏ hàng</p>
+              <Link to="/products" className="empty-browse-btn">Xem tác phẩm →</Link>
             </div>
           ) : (
             <div className="cart-items">
@@ -63,15 +64,15 @@ export default function Cart() {
                     <div className="cart-item-top">
                       <div>
                         <p className="cart-item-title">{item.title}</p>
-                        <p className="cart-item-artist">by {item.artist}</p>
+                        <p className="cart-item-artist">bởi {item.artist}</p>
                         <span className={`cart-item-type ${item.type === 'Digital' ? 'digital' : 'print'}`}>
-                          {item.type === 'Digital' ? '💾 Digital Download' : '🖼️ Print Edition'}
+                          {item.type === 'Digital' ? '💾 Bản số (Digital)' : '🖼️ Bản in (Print)'}
                         </span>
                       </div>
                       <button
                         className="cart-remove-btn"
                         onClick={() => removeItem(item.id, item.type)}
-                        aria-label="Remove item"
+                        aria-label="Xoá sản phẩm"
                       >✕</button>
                     </div>
                     <div className="cart-item-bottom">
@@ -80,7 +81,7 @@ export default function Cart() {
                         <span className="qty-val">{item.qty}</span>
                         <button className="qty-btn" onClick={() => updateQty(item.id, item.type, +1)} disabled={item.type === 'Digital'}>+</button>
                       </div>
-                      <p className="cart-item-price">${(item.price * item.qty).toFixed(2)}</p>
+                      <p className="cart-item-price">{vnd(item.price * item.qty)}</p>
                     </div>
                   </div>
                 </div>
@@ -93,7 +94,7 @@ export default function Cart() {
         {items.length > 0 && (
           <aside className="cart-sidebar">
             <div className="summary-card">
-              <h2 className="summary-title">Order Summary</h2>
+              <h2 className="summary-title">Tóm tắt đơn hàng</h2>
 
               {/* Promo */}
               <div className="promo-wrap">
@@ -101,12 +102,12 @@ export default function Cart() {
                   <input
                     type="text"
                     className="promo-input"
-                    placeholder="Promo code (try GENZ20)"
+                    placeholder="Mã giảm giá (thử GENZ20)"
                     value={promo}
                     onChange={e => setPromo(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && applyPromo()}
                   />
-                  <button className="promo-btn" onClick={applyPromo}>Apply</button>
+                  <button className="promo-btn" onClick={applyPromo}>Áp dụng</button>
                 </div>
                 {promoMsg && <p className={`promo-msg ${discount ? 'success' : 'error'}`}>{promoMsg}</p>}
               </div>
@@ -114,23 +115,23 @@ export default function Cart() {
               {/* Totals */}
               <div className="summary-rows">
                 <div className="summary-row">
-                  <span>Subtotal ({count} items)</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>Tạm tính ({count} sản phẩm)</span>
+                  <span>{vnd(subtotal)}</span>
                 </div>
                 {discount > 0 && (
                   <div className="summary-row discount">
-                    <span>Discount ({(discount * 100).toFixed(0)}%)</span>
-                    <span>−${discountAmt.toFixed(2)}</span>
+                    <span>Giảm giá ({(discount * 100).toFixed(0)}%)</span>
+                    <span>−{vnd(discountAmt)}</span>
                   </div>
                 )}
                 <div className="summary-row">
-                  <span>Shipping</span>
-                  <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+                  <span>Phí vận chuyển</span>
+                  <span>{shipping === 0 ? 'Miễn phí' : vnd(shipping)}</span>
                 </div>
                 <div className="summary-divider"></div>
                 <div className="summary-row total-row">
-                  <span>Total</span>
-                  <span>${finalTotal.toFixed(2)}</span>
+                  <span>Tổng cộng</span>
+                  <span>{vnd(finalTotal)}</span>
                 </div>
               </div>
 
@@ -138,23 +139,21 @@ export default function Cart() {
                 className="checkout-btn"
                 onClick={() => navigate('/checkout', { state: { finalTotal, discount, discountAmt, shipping } })}
               >
-                Proceed to Checkout →
+                Tiến hành thanh toán →
               </button>
 
               <div className="security-badges">
-                <span>🔒 SSL Secured</span>
-                <span>💳 Stripe Protected</span>
-                <span>↩ Easy Returns</span>
+                <span>🔒 Bảo mật SSL</span>
+                <span>💳 Thanh toán VNPay</span>
+                <span>↩ Đổi trả dễ dàng</span>
               </div>
             </div>
 
             {/* Accepted payments */}
             <div className="payment-icons">
-              <span className="pay-icon">VISA</span>
-              <span className="pay-icon">MC</span>
-              <span className="pay-icon">PayPal</span>
-              <span className="pay-icon">MoMo</span>
-              <span className="pay-icon">ZaloPay</span>
+              <span className="pay-icon">VNPay</span>
+              <span className="pay-icon">ATM</span>
+              <span className="pay-icon">QR</span>
             </div>
           </aside>
         )}

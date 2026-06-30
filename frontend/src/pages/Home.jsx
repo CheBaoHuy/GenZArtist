@@ -25,10 +25,10 @@ const CATEGORY_ICONS = {
 };
 
 const STATS = [
-  { value: '120K+', label: 'Artists'   },
-  { value: '2.4M',  label: 'Artworks'  },
-  { value: '890K+', label: 'Collectors'},
-  { value: '48',    label: 'Countries' },
+  { value: '120K+', label: 'Hoạ sĩ'         },
+  { value: '2.4M',  label: 'Tác phẩm'       },
+  { value: '890K+', label: 'Nhà sưu tầm'    },
+  { value: '48',    label: 'Quốc gia'       },
 ];
 
 /* ── Stars ── */
@@ -95,19 +95,19 @@ export default function Home() {
 
         <div className="nav-search-wrap">
           <span className="nav-search-icon">🔍</span>
-          <input className="nav-search" type="text" placeholder="Search artists, artworks…" />
+          <input className="nav-search" type="text" placeholder="Tìm hoạ sĩ, tác phẩm…" />
         </div>
 
         <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          <a href="#trending" className="nav-link" onClick={() => setMenuOpen(false)}>Trending</a>
-          <a href="#artists"  className="nav-link" onClick={() => setMenuOpen(false)}>Artists</a>
-          <Link to="/products" className="nav-link" onClick={() => setMenuOpen(false)}>Explore</Link>
+          <a href="#trending" className="nav-link" onClick={() => setMenuOpen(false)}>Xu hướng</a>
+          <a href="#artists"  className="nav-link" onClick={() => setMenuOpen(false)}>Hoạ sĩ</a>
+          <Link to="/products" className="nav-link" onClick={() => setMenuOpen(false)}>Khám phá</Link>
           {isLoggedIn ? (
             <Link to="/profile" className="nav-btn outline">{fullName}</Link>
           ) : (
             <>
-              <Link to="/login"    className="nav-btn outline" onClick={() => setMenuOpen(false)}>Sign In</Link>
-              <Link to="/register" className="nav-btn solid"   onClick={() => setMenuOpen(false)}>Join Free</Link>
+              <Link to="/login"    className="nav-btn outline" onClick={() => setMenuOpen(false)}>Đăng nhập</Link>
+              <Link to="/register" className="nav-btn solid"   onClick={() => setMenuOpen(false)}>Tham gia miễn phí</Link>
             </>
           )}
         </div>
@@ -126,18 +126,18 @@ export default function Home() {
         <div className="hero-card hero-card-4" style={{ background: 'linear-gradient(135deg,#4cc9f0,#7209b7)' }}></div>
 
         <div className="hero-content">
-          <div className="hero-badge">✦ The #1 platform for Gen Z creators</div>
+          <div className="hero-badge">✦ Nền tảng số 1 cho nhà sáng tạo Gen Z</div>
           <h1 className="hero-title">
-            Discover Art <br/>
-            <span className="gradient-text">Without Limits</span>
+            Khám phá nghệ thuật <br/>
+            <span className="gradient-text">Không giới hạn</span>
           </h1>
           <p className="hero-sub">
-            A creative universe built by and for the next generation of artists.
-            Share, explore, and get discovered.
+            Một vũ trụ sáng tạo được xây dựng bởi và dành cho thế hệ hoạ sĩ tiếp theo.
+            Chia sẻ, khám phá và được biết đến.
           </p>
           <div className="hero-btns">
-            <Link to="/register" className="hero-btn-primary">Start Creating →</Link>
-            <a href="#trending"  className="hero-btn-secondary">Explore Artworks</a>
+            <Link to="/register" className="hero-btn-primary">Bắt đầu sáng tạo →</Link>
+            <a href="#trending"  className="hero-btn-secondary">Khám phá tác phẩm</a>
           </div>
         </div>
       </section>
@@ -146,8 +146,8 @@ export default function Home() {
       <section className="section" id="trending">
         <div className="section-header">
           <div>
-            <div className="section-label">🔥 Hot right now</div>
-            <h2 className="section-title">Trending Artworks</h2>
+            <div className="section-label">🔥 Đang hot</div>
+            <h2 className="section-title">Tác phẩm xu hướng</h2>
           </div>
         </div>
 
@@ -169,7 +169,7 @@ export default function Home() {
                           : <div className="artwork-thumb-placeholder">🎨</div>
                       }
                       <div className="artwork-overlay">
-                        <span className="artwork-view-btn">View ↗</span>
+                        <span className="artwork-view-btn">Xem ↗</span>
                       </div>
                       {art.category && <span className="artwork-tag">{art.category.name}</span>}
                     </div>
@@ -177,7 +177,7 @@ export default function Home() {
                       <div className="artwork-meta">
                         <div>
                           <p className="artwork-title">{art.name}</p>
-                          <p className="artwork-artist">by {art.seller?.fullName || 'Artist'}</p>
+                          <p className="artwork-artist">bởi {art.seller?.fullName || 'Hoạ sĩ'}</p>
                           {art.avgRating > 0 && (
                               <div className="artwork-rating">
                                 <Stars rating={art.avgRating} />
@@ -197,7 +197,7 @@ export default function Home() {
 
         <div className="center-btn">
           <Link to="/products" className="load-more-btn">
-            Load More Artworks →
+            Xem thêm tác phẩm →
           </Link>
         </div>
       </section>
@@ -206,10 +206,10 @@ export default function Home() {
       <section className="section section-dark" id="artists">
         <div className="section-header">
           <div>
-            <div className="section-label">⭐ Top Creators</div>
-            <h2 className="section-title">Featured Artists</h2>
+            <div className="section-label">⭐ Nhà sáng tạo hàng đầu</div>
+            <h2 className="section-title">Hoạ sĩ nổi bật</h2>
           </div>
-          <a href="#artists" className="see-all-link">See all artists →</a>
+          <a href="#artists" className="see-all-link">Xem tất cả hoạ sĩ →</a>
         </div>
 
         <div className="artists-scroll">
@@ -224,15 +224,15 @@ export default function Home() {
               <div className="artist-stats">
                 <div>
                   <span className="stat-value">{a.works}</span>
-                  <span className="stat-label">Works</span>
+                  <span className="stat-label">Tác phẩm</span>
                 </div>
                 <div className="stat-divider"></div>
                 <div>
                   <span className="stat-value">{a.followers}</span>
-                  <span className="stat-label">Followers</span>
+                  <span className="stat-label">Người theo dõi</span>
                 </div>
               </div>
-              <button className="follow-btn">Follow</button>
+              <button className="follow-btn">Theo dõi</button>
             </div>
           ))}
         </div>
@@ -242,8 +242,8 @@ export default function Home() {
       <section className="section" id="categories">
         <div className="section-header">
           <div>
-            <div className="section-label">🗂️ Browse</div>
-            <h2 className="section-title">Explore by Category</h2>
+            <div className="section-label">🗂️ Duyệt</div>
+            <h2 className="section-title">Khám phá theo danh mục</h2>
           </div>
           <Link to="/products" className="see-all-link">Xem tất cả →</Link>
         </div>
@@ -278,8 +278,8 @@ export default function Home() {
       <section className="stats-section">
         <div className="stats-glow"></div>
         <div className="stats-inner">
-          <p className="stats-eyebrow">Trusted by creators worldwide</p>
-          <h2 className="stats-heading">The GenZArtist Community</h2>
+          <p className="stats-eyebrow">Được tin dùng bởi nhà sáng tạo trên toàn thế giới</p>
+          <h2 className="stats-heading">Cộng đồng GenZArtist</h2>
           <div className="stats-grid">
             {STATS.map(s => (
               <div className="stat-item" key={s.label}>
@@ -294,9 +294,9 @@ export default function Home() {
       {/* ── CTA BANNER ──────────────────────────────── */}
       <section className="cta-section">
         <div className="cta-content">
-          <h2 className="cta-title">Ready to share your art?</h2>
-          <p className="cta-sub">Join the fastest-growing art community for Gen Z. It's free, forever.</p>
-          <Link to="/register" className="cta-btn">Create Your Profile →</Link>
+          <h2 className="cta-title">Sẵn sàng chia sẻ tác phẩm?</h2>
+          <p className="cta-sub">Tham gia cộng đồng nghệ thuật phát triển nhanh nhất cho Gen Z. Miễn phí, mãi mãi.</p>
+          <Link to="/register" className="cta-btn">Tạo hồ sơ của bạn →</Link>
         </div>
       </section>
 
@@ -307,7 +307,7 @@ export default function Home() {
             <div className="footer-logo">
               <span>🎨</span> GenZArtist
             </div>
-            <p className="footer-tagline">Where creativity meets the next generation.</p>
+            <p className="footer-tagline">Nơi sáng tạo gặp gỡ thế hệ mới.</p>
             <div className="footer-socials">
               <a href="#social" className="social-icon" aria-label="Twitter">𝕏</a>
               <a href="#social" className="social-icon" aria-label="Instagram">📸</a>
@@ -317,34 +317,34 @@ export default function Home() {
           </div>
           <div className="footer-links-group">
             <div className="footer-col">
-              <p className="footer-col-title">Platform</p>
-              <a href="#f">Browse Art</a>
-              <a href="#f">Artists</a>
-              <a href="#f">Collections</a>
-              <a href="#f">Challenges</a>
+              <p className="footer-col-title">Nền tảng</p>
+              <a href="#f">Duyệt tác phẩm</a>
+              <a href="#f">Hoạ sĩ</a>
+              <a href="#f">Bộ sưu tập</a>
+              <a href="#f">Thử thách</a>
             </div>
             <div className="footer-col">
-              <p className="footer-col-title">Creator</p>
-              <a href="#f">Upload Art</a>
-              <a href="#f">Portfolio</a>
-              <a href="#f">Analytics</a>
-              <a href="#f">Commissions</a>
+              <p className="footer-col-title">Nhà sáng tạo</p>
+              <a href="#f">Đăng tác phẩm</a>
+              <a href="#f">Hồ sơ năng lực</a>
+              <a href="#f">Thống kê</a>
+              <a href="#f">Nhận đặt vẽ</a>
             </div>
             <div className="footer-col">
-              <p className="footer-col-title">Company</p>
-              <a href="#f">About</a>
+              <p className="footer-col-title">Công ty</p>
+              <a href="#f">Giới thiệu</a>
               <a href="#f">Blog</a>
-              <a href="#f">Careers</a>
-              <a href="#f">Contact</a>
+              <a href="#f">Tuyển dụng</a>
+              <a href="#f">Liên hệ</a>
             </div>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 GenZArtist. All rights reserved.</p>
+          <p>© 2026 GenZArtist. Bảo lưu mọi quyền.</p>
           <div className="footer-legal">
-            <a href="#f">Privacy</a>
-            <a href="#f">Terms</a>
-            <a href="#f">Cookies</a>
+            <a href="#f">Bảo mật</a>
+            <a href="#f">Điều khoản</a>
+            <a href="#f">Cookie</a>
           </div>
         </div>
       </footer>

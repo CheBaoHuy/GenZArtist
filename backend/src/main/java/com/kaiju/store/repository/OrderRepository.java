@@ -12,4 +12,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     Page<Order> findByBuyerIdOrderByCreatedAtDesc(Long buyerId, Pageable pageable);
 
     Page<Order> findByOrderStatus(OrderStatus orderStatus, Pageable pageable);
+
+    // Đơn vẽ theo yêu cầu được đặt cho 1 hoạ sĩ (artist) cụ thể
+    Page<Order> findByArtistIdAndCustomOrderTrueOrderByCreatedAtDesc(Long artistId, Pageable pageable);
 }

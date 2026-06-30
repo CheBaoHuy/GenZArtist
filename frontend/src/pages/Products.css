@@ -29,6 +29,10 @@
 .filter-cat-btn.active,.filter-sort-btn.active{background:rgba(168,85,247,.15);color:#c084fc;font-weight:700}
 .filter-cat-count{font-size:.72rem;color:rgba(255,255,255,.3);background:rgba(255,255,255,.05);padding:.1rem .4rem;border-radius:6px}
 
+/* ── CUSTOM ORDER CTA ── */
+.prd-custom-order-btn{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.8rem 1rem;background:linear-gradient(135deg,#a855f7,#6366f1);border:none;border-radius:14px;color:#fff;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s}
+.prd-custom-order-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(168,85,247,.35)}
+
 /* ── MAIN ── */
 .prd-main{flex:1;min-width:0}
 .prd-main-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem}
@@ -48,6 +52,14 @@
 .pc-card:hover .pc-img{transform:scale(1.04)}
 .pc-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;background:linear-gradient(135deg,#1a1a35,#0d0d1f)}
 .pc-category{position:absolute;top:.6rem;left:.6rem;background:rgba(11,11,26,.8);border:1px solid rgba(168,85,247,.3);color:#c084fc;font-size:.68rem;font-weight:700;padding:.18rem .5rem;border-radius:6px;letter-spacing:.03em;backdrop-filter:blur(8px)}
+.pc-add{position:absolute;bottom:.6rem;right:.6rem;display:flex;align-items:center;gap:.3rem;padding:.4rem .7rem;background:linear-gradient(135deg,#a855f7,#6366f1);border:none;border-radius:9px;color:#fff;font-family:'Inter',sans-serif;font-size:.74rem;font-weight:700;cursor:pointer;opacity:0;transform:translateY(6px);transition:all .2s;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.pc-card:hover .pc-add{opacity:1;transform:translateY(0)}
+.pc-add:hover{filter:brightness(1.1)}
+.pc-add.added{background:#22c55e;opacity:1;transform:translateY(0)}
+@media(max-width:768px){.pc-add{opacity:1;transform:none}}
+
+.prd-nav-cart{position:relative}
+.prd-cart-badge{position:absolute;top:-7px;right:-10px;min-width:17px;height:17px;padding:0 4px;display:flex;align-items:center;justify-content:center;background:#ef4444;color:#fff;font-size:.62rem;font-weight:800;border-radius:99px}
 .pc-info{padding:.9rem 1rem 1rem}
 .pc-name{font-size:.92rem;font-weight:700;color:#f1f1f1;margin-bottom:.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pc-artist{font-size:.77rem;color:rgba(255,255,255,.4);margin-bottom:.6rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

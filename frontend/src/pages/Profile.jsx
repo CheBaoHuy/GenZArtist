@@ -116,8 +116,8 @@ export default function Profile() {
   }
 
 
-  if (loading) return <div>Loading profile...</div>;
-  if (!profile) return <div>Không tìm thấy profile</div>;
+  if (loading) return <div>Đang tải hồ sơ...</div>;
+  if (!profile) return <div>Không tìm thấy hồ sơ</div>;
 
 
   return (
@@ -127,7 +127,11 @@ export default function Profile() {
       <nav className="pf-nav">
         <Link to="/" className="pf-nav-logo">🎨 <span>GenZArtist</span></Link>
         <div className="pf-nav-right">
-          <Link to="/" className="pf-nav-link">Home</Link>
+          <Link to="/" className="pf-nav-link">Trang chủ</Link>
+          {getRole === 'BUYER' &&
+              <Link className="pf-nav-link" to="/orders">📦 Đơn hàng của tôi</Link>}
+          {getRole === 'SELLER' &&
+              <Link className="pf-nav-link" to="/seller/orders">🎨 Đơn vẽ được đặt</Link>}
           {getRole === 'ADMIN' ?
               <li id={"manager_navigate"} className="menu-item">
                 <Link className="pf-nav-link" to={"/admin"}>Quản lý</Link>
@@ -168,11 +172,11 @@ export default function Profile() {
               className={`follow-main-btn ${followed ? 'following' : ''}`}
               onClick={() => setFollowed(!followed)}
             >
-              {followed ? '✓ Following' : '+ Follow'}
+              {followed ? '✓ Đang theo dõi' : '+ Theo dõi'}
             </button>
-            <button className="msg-btn">💬 Message</button>
+            <button className="msg-btn">💬 Nhắn tin</button>
             <button className="more-btn" onClick={() => setIsEditing(true)}>
-              Edit Profile
+              Chỉnh sửa hồ sơ
             </button>
 
 
@@ -181,41 +185,41 @@ export default function Profile() {
                 <div className="profile-edit-panel" onClick={(e) => e.stopPropagation()}>
                   <form className="profile-edit-form" onSubmit={handleUpdateProfile}>
                   <label>
-                    Full name
+                    Họ và tên
                     <input name="fullName" value={formData.fullName} onChange={handleChange} />
                   </label>
                   <label>
-                    Phone
+                    Số điện thoại
                     <input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
                   </label>
                   <label>
-                    Avatar URL
+                    Ảnh đại diện
                     <input name="avatarUrl" value={formData.avatarUrl} onChange={handleChange} />
                   </label>
                   <label>
-                    Address
+                    Địa chỉ
                     <input name="address" value={formData.address} onChange={handleChange} />
                   </label>
 
                   <div className="form-actions">
-                  <button type="submit">Save</button>
-                  <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
+                  <button type="submit">Lưu</button>
+                  <button type="button" onClick={() => setIsEditing(false)}>Huỷ</button>
                 </div>
                 </form>
               </div>
               </div>
               ) : null}
-            <button className="more-btn" onClick={handleLogout}>Logout</button>
+            <button className="more-btn" onClick={handleLogout}>Đăng xuất</button>
           </div>
         </div>
 
         {/* ── STATS ── */}
         <div className="profile-stats">
           {[
-            { label: 'Works', value: profile.works ? profile.works.toLocaleString() : '0' },
-            { label: 'Followers', value: profile.followers ? (profile.followers / 1000).toFixed(1) + 'k' : '0' },
-            { label: 'Following', value: profile.following ?? 0 },
-            { label: 'Total Likes', value: profile.likes ? (profile.likes / 1000).toFixed(1) + 'k' : '0' },
+            { label: 'Tác phẩm', value: profile.works ? profile.works.toLocaleString() : '0' },
+            { label: 'Người theo dõi', value: profile.followers ? (profile.followers / 1000).toFixed(1) + 'k' : '0' },
+            { label: 'Đang theo dõi', value: profile.following ?? 0 },
+            { label: 'Tổng lượt thích', value: profile.likes ? (profile.likes / 1000).toFixed(1) + 'k' : '0' },
           ].map(s => (
             <div className="pf-stat" key={s.label}>
               <span className="pf-stat-val">{s.value}</span>
@@ -234,8 +238,8 @@ export default function Profile() {
               className={`profile-tab ${tab === t ? 'active' : ''}`}
               onClick={() => setTab(t)}
             >
-              {t === 'works' ? `🖼️ Works (${profile.works})` :
-               t === 'collections' ? `📁 Collections` : '👤 About'}
+              {t === 'works' ? `🖼️ Tác phẩm (${profile.works})` :
+               t === 'collections' ? `📁 Bộ sưu tập` : '👤 Giới thiệu'}
             </button>
           ))}
         </div>
@@ -276,7 +280,7 @@ export default function Profile() {
             {COLLECTIONS.map(col => (
               <div className="col-card" key={col.id}>
                 <div className="col-thumb" style={{ background: col.grad }}>
-                  <span className="col-count">{col.count} works</span>
+                  <span className="col-count">{col.count} tác phẩm</span>
                 </div>
                 <p className="col-name">{col.name}</p>
               </div>
@@ -288,11 +292,11 @@ export default function Profile() {
         {tab === 'about' && (
           <div className="about-section">
             <div className="about-card">
-              <h3>About Me</h3>
-              <p>Hi! I'm Luna, a digital artist based in Hà Nội, Vietnam. I specialize in neon-infused digital illustrations, concept art, and AI-assisted artwork. I've been creating digital art for over 4 years and love exploring the intersection of technology and creativity.</p>
+              <h3>Giới thiệu</h3>
+              <p>Xin chào! Mình là Luna, một hoạ sĩ kỹ thuật số sống tại Hà Nội, Việt Nam. Mình chuyên về tranh minh hoạ kỹ thuật số phong cách neon, concept art và tác phẩm có hỗ trợ AI. Mình đã sáng tạo nghệ thuật số hơn 4 năm và yêu thích khám phá sự giao thoa giữa công nghệ và sáng tạo.</p>
             </div>
             <div className="about-card">
-              <h3>Skills</h3>
+              <h3>Kỹ năng</h3>
               <div className="skill-tags">
                 {['Photoshop','Procreate','Midjourney','After Effects','Figma','Blender'].map(s => (
                   <span className="skill-tag" key={s}>{s}</span>
@@ -300,7 +304,7 @@ export default function Profile() {
               </div>
             </div>
             <div className="about-card">
-              <h3>Social Links</h3>
+              <h3>Liên kết mạng xã hội</h3>
               <div className="about-links">
                 <a href="#s" className="about-link">𝕏 @luna_exe</a>
                 <a href="#s" className="about-link">📸 @luna.exe</a>
@@ -314,7 +318,7 @@ export default function Profile() {
 
       {/* ── FOOTER ── */}
       <footer className="pf-footer">
-        <p>© 2026 GenZArtist · <Link to="/">Home</Link> · <a href="#terms">Terms</a> · <a href="#privacy">Privacy</a></p>
+        <p>© 2026 GenZArtist · <Link to="/">Trang chủ</Link> · <a href="#terms">Điều khoản</a> · <a href="#privacy">Bảo mật</a></p>
       </footer>
     </div>
   );

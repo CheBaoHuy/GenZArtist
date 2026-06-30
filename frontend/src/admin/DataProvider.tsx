@@ -29,6 +29,32 @@ const httpClient = (url: string, options: any = {}) => {
     }
     return fetchUtils.fetchJson(url, { ...options, headers });
 };
+
+// Backend admin không hỗ trợ sort -> lấy hết rồi sort + phân trang phía client.
+const FETCH_ALL = 1000;
+const getPath = (obj: any, path: string) =>
+    String(path).split('.').reduce((o: any, k: string) => (o == null ? undefined : o[k]), obj);
+
+const sortRows = (rows: any[], sort: any) => {
+    if (!Array.isArray(rows) || !sort || !sort.field) return rows;
+    const { field, order } = sort;
+    const dir = order === 'DESC' ? -1 : 1;
+    return [...rows].sort((a, b) => {
+        const va = getPath(a, field);
+        const vb = getPath(b, field);
+        if (va == null && vb == null) return 0;
+        if (va == null) return 1;   // null xuống cuối
+        if (vb == null) return -1;
+        if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * dir;
+        return String(va).localeCompare(String(vb), 'vi', { numeric: true, sensitivity: 'base' }) * dir;
+    });
+};
+
+const paginate = (rows: any[], page: number, perPage: number) => {
+    const start = (page - 1) * perPage;
+    return rows.slice(start, start + perPage);
+};
+
 // @ts-ignore
 export const dataProvider: DataProvider = {
     // @ts-ignore
@@ -36,7 +62,7 @@ export const dataProvider: DataProvider = {
         const { page = 1, perPage = 10 } = params.pagination || {}; // Lấy thông tin phân trang
         // Resource user map sang endpoint /admin/users (envelope ApiResponse)
         if (resource === 'user') {
-            const userQuery: any = { page, size: perPage };
+            const userQuery: any = { page: 1, size: FETCH_ALL };
             if (params.filter && params.filter.role) {
                 userQuery.role = params.filter.role;
             }
@@ -44,14 +70,15 @@ export const dataProvider: DataProvider = {
                 `${apiUrl}/admin/users?${fetchUtils.queryParameters(userQuery)}`,
                 { method: 'GET' }
             );
+            const sorted = sortRows(json.data.users, params.sort);
             return {
-                data: json.data.users,
+                data: paginate(sorted, page, perPage),
                 total: json.data.pagination.totalItems,
             };
         }
         // Resource product map sang /admin/products (envelope ApiResponse)
         if (resource === 'product') {
-            const productQuery: any = { page, size: perPage };
+            const productQuery: any = { page: 1, size: FETCH_ALL };
             if (params.filter && params.filter.status) {
                 productQuery.status = params.filter.status;
             }
@@ -59,22 +86,24 @@ export const dataProvider: DataProvider = {
                 `${apiUrl}/admin/products?${fetchUtils.queryParameters(productQuery)}`,
                 { method: 'GET' }
             );
+            const sorted = sortRows(json.data.products, params.sort);
             return {
-                data: json.data.products,
+                data: paginate(sorted, page, perPage),
                 total: json.data.pagination.totalItems,
             };
         }
         // Danh mục: GET /categories trả ApiResponse<List<Category>> (không phân trang)
         if (resource === 'category') {
             const { json } = await httpClient(`${apiUrl}/categories`, { method: 'GET' });
+            const sorted = sortRows(json.data, params.sort);
             return {
-                data: json.data,
+                data: paginate(sorted, page, perPage),
                 total: json.data.length,
             };
         }
         // Đơn hàng: id là chuỗi orderId nên cần map orderId -> id cho react-admin
         if (resource === 'order') {
-            const orderQuery: any = { page, size: perPage };
+            const orderQuery: any = { page: 1, size: FETCH_ALL };
             if (params.filter && params.filter.orderStatus) {
                 orderQuery.status = params.filter.orderStatus;
             }
@@ -82,19 +111,22 @@ export const dataProvider: DataProvider = {
                 `${apiUrl}/admin/orders?${fetchUtils.queryParameters(orderQuery)}`,
                 { method: 'GET' }
             );
+            const rows = json.data.orders.map((o: any) => ({ ...o, id: o.orderId }));
+            const sorted = sortRows(rows, params.sort);
             return {
-                data: json.data.orders.map((o: any) => ({ ...o, id: o.orderId })),
+                data: paginate(sorted, page, perPage),
                 total: json.data.pagination.totalItems,
             };
         }
         // Đánh giá sản phẩm / tác giả: envelope { data: { reviews, pagination } }
         if (isReviewResource(resource)) {
             const { json } = await httpClient(
-                `${resourceBase(resource)}?${fetchUtils.queryParameters({ page, size: perPage })}`,
+                `${resourceBase(resource)}?${fetchUtils.queryParameters({ page: 1, size: FETCH_ALL })}`,
                 { method: 'GET' }
             );
+            const sorted = sortRows(json.data.reviews, params.sort);
             return {
-                data: json.data.reviews,
+                data: paginate(sorted, page, perPage),
                 total: json.data.pagination.totalItems,
             };
         }

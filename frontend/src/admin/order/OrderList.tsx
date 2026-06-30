@@ -25,6 +25,12 @@ export const ORDER_STATUS: Record<string, { label: string; color: any }> = {
     REFUNDED: { label: "Đã hoàn tiền", color: "secondary" },
 };
 
+export const PAYMENT_PHASE: Record<string, { label: string; color: any }> = {
+    UNPAID: { label: "Chưa thanh toán", color: "default" },
+    DEPOSIT_PAID: { label: "Đã cọc 30%", color: "warning" },
+    FULLY_PAID: { label: "Đã thanh toán đủ", color: "success" },
+};
+
 export const OrderList = () => (
     <List sort={{ field: "createdAt", order: "DESC" }} aside={<OrderFilterSidebar />}>
         <Datagrid
@@ -38,7 +44,18 @@ export const OrderList = () => (
                 label="Tổng tiền"
                 options={{ style: "currency", currency: "VND" }}
             />
-            <TextField source="paymentMethod" label="Thanh toán" />
+            <NumberField
+                source="depositAmount"
+                label="Cọc 30%"
+                options={{ style: "currency", currency: "VND" }}
+            />
+            <FunctionField
+                label="Thanh toán"
+                render={(record: any) => {
+                    const meta = PAYMENT_PHASE[record.paymentPhase] || { label: record.paymentPhase || "—", color: "default" };
+                    return <Chip size="small" label={meta.label} color={meta.color} />;
+                }}
+            />
             <FunctionField
                 label="Trạng thái"
                 render={(record: any) => {

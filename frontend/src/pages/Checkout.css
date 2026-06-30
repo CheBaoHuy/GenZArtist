@@ -35,7 +35,13 @@
 .co-next-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 24px rgba(168,85,247,.4)}
 .co-next-btn:disabled{opacity:.5;cursor:not-allowed}
 
-/* ── PAYMENT METHODS ── */
+/* ── PAYMENT METHOD: VNPAY ── */
+.vnpay-pay-box{display:flex;align-items:center;gap:1.1rem;padding:1.3rem 1.4rem;margin-bottom:2rem;background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.3);border-radius:16px}
+.vnpay-logo-img{flex-shrink:0;width:120px;height:auto;background:#fff;padding:.55rem .7rem;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.vnpay-title{font-size:.95rem;font-weight:800;color:#f1f1f1;margin-bottom:.25rem}
+.vnpay-desc{font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.5}
+
+/* ── PAYMENT METHODS (legacy, không còn dùng) ── */
 .pay-method-tabs{display:flex;gap:.75rem;margin-bottom:2rem;flex-wrap:wrap}
 .pay-tab{flex:1;min-width:120px;padding:.85rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:rgba(255,255,255,.6);font-size:.88rem;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;text-align:center}
 .pay-tab:hover{background:rgba(255,255,255,.08)}
@@ -80,6 +86,11 @@
 .checkout-sidebar{width:360px;flex-shrink:0;position:sticky;top:96px}
 .co-summary-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:1.75rem}
 .co-summary-title{font-size:1.1rem;font-weight:700;margin-bottom:1.5rem}
+.co-custom-order{background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1.25rem}
+.co-custom-badge{font-size:.78rem;font-weight:700;color:#c084fc;margin-bottom:.7rem}
+.co-custom-row{display:flex;justify-content:space-between;gap:1rem;font-size:.82rem;padding:.2rem 0;color:rgba(255,255,255,.5)}
+.co-custom-row strong{color:#f1f1f1;font-weight:600;text-align:right}
+.co-custom-desc{margin-top:.7rem;padding-top:.7rem;border-top:1px solid rgba(255,255,255,.08);font-size:.82rem;font-style:italic;color:rgba(255,255,255,.55);line-height:1.5}
 .co-summary-items{display:flex;flex-direction:column;gap:1.25rem;margin-bottom:1.5rem;max-height:400px;overflow-y:auto;padding-right:.5rem}
 .co-summary-items::-webkit-scrollbar{width:4px}
 .co-summary-items::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
@@ -101,6 +112,8 @@
 @keyframes bounce{0%{transform:scale(0)}100%{transform:scale(1)}}
 .success-screen h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#06d6a0,#118ab2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.75rem}
 .success-screen p{color:rgba(255,255,255,.6);font-size:1rem;line-height:1.6;margin-bottom:1.5rem}
+.pr-countdown{font-size:.88rem;color:rgba(255,255,255,.45);margin-bottom:1.25rem}
+.pr-countdown strong{color:#c084fc}
 .order-id{display:inline-block;padding:.4rem 1rem;background:rgba(255,255,255,.06);border-radius:8px;font-family:monospace;font-size:1.1rem;color:#f1f1f1;margin-bottom:2.5rem}
 .success-actions{display:flex;flex-direction:column;gap:.75rem}
 .success-btn{padding:1rem;border-radius:14px;font-size:1rem;font-weight:700;text-decoration:none;transition:all .2s}
@@ -124,3 +137,32 @@
   .co-form{grid-template-columns:1fr}
   .pay-method-tabs{grid-template-columns:1fr 1fr;display:grid}
 }
+
+/* ── Thanh toán 2 lần: cọc 30% / còn lại 70% ── */
+.co-deposit-note{
+  background:rgba(168,85,247,.08);
+  border:1px solid rgba(168,85,247,.25);
+  border-radius:12px;
+  padding:.85rem 1rem;
+  font-size:.9rem;
+  line-height:1.5;
+  color:#4b5563;
+  margin-bottom:1.25rem;
+}
+.pay-split-box{
+  width:min(420px,90%);
+  margin:1.5rem auto;
+  background:#fff;
+  border:1px solid #ececf3;
+  border-radius:16px;
+  padding:1.1rem 1.3rem;
+  box-shadow:0 8px 30px rgba(0,0,0,.06);
+}
+.pay-split-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.5rem 0;font-size:.95rem;color:#374151;
+}
+.pay-split-row.done strong{color:#16a34a}
+.pay-split-row.pending strong{color:#d97706}
+.pay-split-row.total{font-size:1.05rem;font-weight:700}
+.pay-split-divider{height:1px;background:#ececf3;margin:.4rem 0}
