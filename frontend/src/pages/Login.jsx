@@ -1,11 +1,16 @@
 import { useState } from 'react';
-import { Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import './Auth.css';
 import axios from 'axios';
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const sessionExpired = searchParams.get('session') === 'expired';
+  // Trang muốn vào trước khi bị chặn (ProtectedRoute truyền qua state).
+  const redirectTo = location.state?.redirect || '/';
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
@@ -26,7 +31,8 @@ const handleSubmit = async (e) => {
     localStorage.setItem('token', accessToken);
     localStorage.setItem('role', role);
     localStorage.setItem('user', JSON.stringify({ fullName }));
-    navigate('/dashboard');
+    // ADMIN vào trang quản trị; còn lại quay về trang đã định (hoặc trang chủ).
+    navigate(role === 'ADMIN' ? '/admin' : redirectTo, { replace: true });
   } catch (error) {
     console.error(error);
   } finally {
@@ -49,19 +55,19 @@ const handleSubmit = async (e) => {
               <span className="logo-icon">🎨</span>
             </div>
             <h1 className="brand-name">GenZArtist</h1>
-            <p className="brand-tagline">Where creativity meets the next generation</p>
+            <p className="brand-tagline">Nơi sáng tạo gặp gỡ thế hệ mới</p>
             <div className="brand-features">
               <div className="feature-item">
                 <span className="feature-icon">✦</span>
-                <span>Showcase your artwork</span>
+                <span>Trưng bày tác phẩm của bạn</span>
               </div>
               <div className="feature-item">
                 <span className="feature-icon">✦</span>
-                <span>Connect with creators worldwide</span>
+                <span>Kết nối với nhà sáng tạo toàn cầu</span>
               </div>
               <div className="feature-item">
                 <span className="feature-icon">✦</span>
-                <span>Get discovered & grow your fanbase</span>
+                <span>Được khám phá & phát triển người hâm mộ</span>
               </div>
             </div>
           </div>
@@ -75,9 +81,15 @@ const handleSubmit = async (e) => {
         {/* Right panel – form */}
         <div className="auth-form-panel">
           <div className="form-header">
-            <h2>Welcome back 👋</h2>
-            <p>Sign in to continue your creative journey</p>
+            <h2>Chào mừng trở lại 👋</h2>
+            <p>Đăng nhập để tiếp tục hành trình sáng tạo</p>
           </div>
+
+          {sessionExpired && (
+            <div className="auth-alert" role="alert">
+              ⏱️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.
+            </div>
+          )}
 
           {/* Social login */}
           <div className="social-login">
@@ -88,11 +100,11 @@ const handleSubmit = async (e) => {
                 <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.3 35.3 26.8 36 24 36c-5.2 0-9.7-3.4-11.3-8H6.3C9.7 35.6 16.3 44 24 44z"/>
                 <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.4l6.2 5.2C37 38.1 44 33 44 24c0-1.3-.1-2.6-.4-3.9z"/>
               </svg>
-              Continue with Google
+              Tiếp tục với Google
             </button>
           </div>
 
-          <div className="divider"><span>or sign in with email</span></div>
+          <div className="divider"><span>hoặc đăng nhập bằng email</span></div>
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="input-group">
@@ -113,8 +125,8 @@ const handleSubmit = async (e) => {
 
             <div className="input-group">
               <div className="label-row">
-                <label htmlFor="login-password">Password</label>
-                <a href="#forgot" className="forgot-link">Forgot password?</a>
+                <label htmlFor="login-password">Mật khẩu</label>
+                <a href="#forgot" className="forgot-link">Quên mật khẩu?</a>
               </div>
               <div className="input-wrapper">
                 <span className="input-icon">🔒</span>
@@ -131,7 +143,7 @@ const handleSubmit = async (e) => {
                   type="button"
                   className="toggle-pass"
                   onClick={() => setShowPassword(!showPassword)}
-                  aria-label="Toggle password visibility"
+                  aria-label="Hiện/ẩn mật khẩu"
                 >
                   {showPassword ? '🙈' : '👁️'}
                 </button>
@@ -139,13 +151,13 @@ const handleSubmit = async (e) => {
             </div>
 
             <button type="submit" className={`submit-btn ${isLoading ? 'loading' : ''}`} disabled={isLoading}>
-              {isLoading ? <span className="spinner"></span> : 'Sign In'}
+              {isLoading ? <span className="spinner"></span> : 'Đăng nhập'}
             </button>
           </form>
 
           <p className="switch-auth">
-            Don't have an account?{' '}
-            <Link to="/register" className="switch-link">Create one free →</Link>
+            Chưa có tài khoản?{' '}
+            <Link to="/register" className="switch-link">Tạo tài khoản miễn phí →</Link>
           </p>
         </div>
       </div>

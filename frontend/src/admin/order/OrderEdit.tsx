@@ -4,6 +4,7 @@ import {
     Datagrid,
     Edit,
     NumberField,
+    NumberInput,
     required,
     SelectInput,
     SimpleForm,
@@ -32,11 +33,25 @@ const PAYMENT_METHOD_CHOICES = [
     { id: "MOMO", name: "MOMO" },
 ];
 
+const PAYMENT_PHASE_CHOICES = [
+    { id: "UNPAID", name: "Chưa thanh toán" },
+    { id: "DEPOSIT_PAID", name: "Đã cọc 30%" },
+    { id: "FULLY_PAID", name: "Đã thanh toán đủ" },
+];
+
 export const OrderEdit = () => (
     <Edit mutationMode="pessimistic">
         <SimpleForm>
             <TextInput source="orderId" label="Mã đơn" disabled />
             <TextInput source="buyerName" label="Người mua" disabled />
+            <NumberInput source="totalAmount" label="Tổng tiền" disabled />
+            <NumberInput source="depositAmount" label="Tiền cọc (30%)" disabled />
+            <NumberInput source="remainingAmount" label="Còn lại (70%)" disabled />
+            <SelectInput
+                source="paymentPhase"
+                label="Giai đoạn thanh toán"
+                choices={PAYMENT_PHASE_CHOICES}
+            />
             <SelectInput
                 source="orderStatus"
                 label="Trạng thái đơn"

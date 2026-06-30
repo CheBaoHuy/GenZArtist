@@ -63,7 +63,7 @@ function Register() {
     return score;
   };
 
-  const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  const strengthLabel = ['', 'Yếu', 'Trung bình', 'Khá', 'Mạnh'];
   const strengthColor = ['', '#ff4d6d', '#ffd166', '#06d6a0', '#4cc9f0'];
   const strength = passwordStrength();
 
@@ -81,19 +81,19 @@ function Register() {
               <span className="logo-icon">🎨</span>
             </div>
             <h1 className="brand-name">GenZArtist</h1>
-            <p className="brand-tagline">Join thousands of Gen Z creators</p>
+            <p className="brand-tagline">Gia nhập cộng đồng hàng nghìn nhà sáng tạo Gen Z</p>
             <div className="brand-features">
               <div className="feature-item">
                 <span className="feature-icon">✦</span>
-                <span>Free to join, forever</span>
+                <span>Tham gia miễn phí, trọn đời</span>
               </div>
               <div className="feature-item">
                 <span className="feature-icon">✦</span>
-                <span>Upload unlimited artworks</span>
+                <span>Đăng tải tác phẩm không giới hạn</span>
               </div>
               <div className="feature-item">
                 <span className="feature-icon">✦</span>
-                <span>Build your creative portfolio</span>
+                <span>Xây dựng portfolio sáng tạo của riêng bạn</span>
               </div>
             </div>
 
@@ -103,7 +103,7 @@ function Register() {
               <div className="step-line"></div>
               <div className={`step-dot ${step >= 2 ? 'active' : ''}`}></div>
             </div>
-            <p className="step-label">Step {step} of 2</p>
+            <p className="step-label">Bước {step} / 2</p>
           </div>
           <div className="floating-shapes">
             <div className="shape shape-1"></div>
@@ -117,8 +117,8 @@ function Register() {
           {step === 1 && (
             <>
               <div className="form-header">
-                <h2>Create account ✨</h2>
-                <p>Let's start with your basic info</p>
+                <h2>Tạo tài khoản ✨</h2>
+                <p>Hãy bắt đầu với thông tin cơ bản của bạn</p>
               </div>
 
               <div className="social-login">
@@ -129,22 +129,22 @@ function Register() {
                     <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.3 35.3 26.8 36 24 36c-5.2 0-9.7-3.4-11.3-8H6.3C9.7 35.6 16.3 44 24 44z"/>
                     <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.4l6.2 5.2C37 38.1 44 33 44 24c0-1.3-.1-2.6-.4-3.9z"/>
                   </svg>
-                  Continue with Google
+                  Tiếp tục với Google
                 </button>
               </div>
 
-              <div className="divider"><span>or register with email</span></div>
+              <div className="divider"><span>hoặc đăng ký bằng email</span></div>
 
               <form className="auth-form" onSubmit={handleNext}>
                 <div className="input-group">
-                  <label htmlFor="reg-username">Username</label>
+                  <label htmlFor="reg-username">Họ và tên</label>
                   <div className="input-wrapper">
                     <span className="input-icon">🧑‍🎨</span>
                     <input
                       id="reg-fullname"
                       type="text"
                       name="fullName"
-                      placeholder="Your Full Name"
+                      placeholder="Họ và tên của bạn"
                       value={formData.fullName}
                       onChange={handleChange}
                       required
@@ -166,7 +166,7 @@ function Register() {
                     />
                   </div>
                 </div>
-                <button type="submit" className="submit-btn">Next →</button>
+                <button type="submit" className="submit-btn">Tiếp tục →</button>
               </form>
             </>
           )}
@@ -174,20 +174,20 @@ function Register() {
           {step === 2 && (
             <>
               <div className="form-header">
-                <h2>Set your password 🔐</h2>
-                <p>Make it strong to keep your account safe</p>
+                <h2>Đặt mật khẩu 🔐</h2>
+                <p>Hãy đặt mật khẩu đủ mạnh để bảo vệ tài khoản của bạn</p>
               </div>
 
               <form className="auth-form" onSubmit={handleSubmit}>
                 <div className="input-group">
-                  <label htmlFor="reg-password">Password</label>
+                  <label htmlFor="reg-password">Mật khẩu</label>
                   <div className="input-wrapper">
                     <span className="input-icon">🔒</span>
                     <input
                       id="reg-password"
                       type={showPassword ? 'text' : 'password'}
                       name="password"
-                      placeholder="Min. 8 characters"
+                      placeholder="Tối thiểu 8 ký tự"
                       value={formData.password}
                       onChange={handleChange}
                       required
@@ -214,14 +214,14 @@ function Register() {
                 </div>
 
                 <div className="input-group">
-                  <label htmlFor="reg-confirm">Confirm Password</label>
+                  <label htmlFor="reg-confirm">Xác nhận mật khẩu</label>
                   <div className="input-wrapper">
                     <span className="input-icon">✅</span>
                     <input
                       id="reg-confirm"
                       type={showConfirm ? 'text' : 'password'}
                       name="confirm"
-                      placeholder="Repeat your password"
+                      placeholder="Nhập lại mật khẩu của bạn"
                       value={formData.confirm}
                       onChange={handleChange}
                       required
@@ -231,22 +231,25 @@ function Register() {
                     </button>
                   </div>
                   {formData.confirm && formData.password !== formData.confirm && (
-                    <p className="input-error">Passwords do not match</p>
+                    <p className="input-error">Mật khẩu không khớp</p>
                   )}
                 </div>
 
                 {/* Role selector */}
                 <div className="input-group">
-                  <label>I am a...</label>
+                  <label>Tôi là...</label>
                   <div className="role-selector">
-                    {['Artist', 'Fan', 'Collector'].map((r) => (
+                    {[
+                      { value: 'SELLER', label: 'Hoạ sĩ', icon: '🎨' },
+                      { value: 'BUYER', label: 'Người mua', icon: '🌟' },
+                    ].map((r) => (
                       <button
-                        key={r}
+                        key={r.value}
                         type="button"
-                        className={`role-btn ${formData.role === r ? 'selected' : ''}`}
-                        onClick={() => setFormData({ ...formData, role: r })}
+                        className={`role-btn ${formData.role === r.value ? 'selected' : ''}`}
+                        onClick={() => setFormData({ ...formData, role: r.value })}
                       >
-                        {r === 'Artist' ? '🎨' : r === 'Fan' ? '🌟' : '🖼️'} {r}
+                        {r.icon} {r.label}
                       </button>
                     ))}
                   </div>
@@ -255,19 +258,19 @@ function Register() {
                 <div className="terms-row">
                   <input type="checkbox" id="terms" required />
                   <label htmlFor="terms">
-                    I agree to the <a href="#terms" className="forgot-link">Terms of Service</a> and{' '}
-                    <a href="#privacy" className="forgot-link">Privacy Policy</a>
+                    Tôi đồng ý với <a href="#terms" className="forgot-link">Điều khoản dịch vụ</a> và{' '}
+                    <a href="#privacy" className="forgot-link">Chính sách bảo mật</a>
                   </label>
                 </div>
 
                 <div className="btn-row">
-                  <button type="button" className="back-btn" onClick={() => setStep(1)}>← Back</button>
+                  <button type="button" className="back-btn" onClick={() => setStep(1)}>← Quay lại</button>
                   <button
                     type="submit"
                     className={`submit-btn ${isLoading ? 'loading' : ''}`}
                     disabled={isLoading || formData.password !== formData.confirm}
                   >
-                    {isLoading ? <span className="spinner"></span> : 'Create Account'}
+                    {isLoading ? <span className="spinner"></span> : 'Tạo tài khoản'}
                   </button>
                 </div>
               </form>
@@ -275,8 +278,8 @@ function Register() {
           )}
 
           <p className="switch-auth">
-            Already have an account?{' '}
-            <Link to="/login" className="switch-link">Sign in →</Link>
+            Đã có tài khoản?{' '}
+            <Link to="/login" className="switch-link">Đăng nhập →</Link>
           </p>
         </div>
       </div>

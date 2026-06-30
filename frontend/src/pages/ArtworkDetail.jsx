@@ -187,7 +187,7 @@ export default function ArtworkDetail() {
       imageUrl: product.imageUrl,
       price:  purchaseType === 'Digital'
           ? parseFloat(product.price)
-          : parseFloat(product.price) + 25,
+          : parseFloat(product.price) + 25000,
     });
     navigate('/cart');
   };
@@ -216,9 +216,9 @@ export default function ArtworkDetail() {
         <nav className="dt-nav">
           <Link to="/" className="dt-nav-logo">🎨 <span>GenZArtist</span></Link>
           <div className="dt-breadcrumb">
-            <Link to="/">Home</Link>
+            <Link to="/">Trang chủ</Link>
             <span>/</span>
-            <Link to="/products">Artworks</Link>
+            <Link to="/products">Tác phẩm</Link>
             <span>/</span>
             <span className="dt-bc-current">{product.name}</span>
           </div>
@@ -228,8 +228,8 @@ export default function ArtworkDetail() {
                 <Link to="/profile" className="dt-nav-btn outline">{user.fullName}</Link>
             ) : (
                 <>
-                  <Link to="/login"    className="dt-nav-btn outline">Sign In</Link>
-                  <Link to="/register" className="dt-nav-btn solid">Join Free</Link>
+                  <Link to="/login"    className="dt-nav-btn outline">Đăng nhập</Link>
+                  <Link to="/register" className="dt-nav-btn solid">Tham gia miễn phí</Link>
                 </>
             )}
           </div>
@@ -253,7 +253,7 @@ export default function ArtworkDetail() {
             <div className="artwork-action-bar">
               <div className="action-left">
               <span className="action-btn">
-                👁️ <span>{(product.viewCount || 0).toLocaleString()} views</span>
+                👁️ <span>{(product.viewCount || 0).toLocaleString()} lượt xem</span>
               </span>
                 <span className="action-btn">
                 ⭐ <span>{avgRating > 0 ? avgRating.toFixed(1) : '—'} ({rvMeta.totalReviews} đánh giá)</span>
@@ -375,7 +375,7 @@ export default function ArtworkDetail() {
             <div className="sidebar-card artist-sidebar-card">
               <Avatar url={product.seller?.avatarUrl} name={product.seller?.fullName} size={52} />
               <div className="sidebar-artist-info">
-                <p className="sidebar-artist-name">{product.seller?.fullName || 'Artist'}</p>
+                <p className="sidebar-artist-name">{product.seller?.fullName || 'Nghệ sĩ'}</p>
                 <p className="sidebar-artist-handle">@{(product.seller?.fullName || 'artist').toLowerCase().replace(/\s+/g, '.')}</p>
               </div>
             </div>
@@ -389,7 +389,7 @@ export default function ArtworkDetail() {
                   { label: 'Ngày đăng', value: fmtDate(product.createdAt) },
                   { label: 'Lượt xem', value: (product.viewCount || 0).toLocaleString() },
                   { label: 'Đánh giá', value: avgRating > 0 ? `${avgRating.toFixed(1)} ⭐ (${rvMeta.totalReviews})` : 'Chưa có' },
-                  { label: 'Bản quyền', value: 'All rights reserved' },
+                  { label: 'Bản quyền', value: 'Đã đăng ký bản quyền' },
                 ].map(d => (
                     <div className="sidebar-detail-row" key={d.label}>
                       <span className="sd-label">{d.label}</span>
@@ -406,14 +406,14 @@ export default function ArtworkDetail() {
                     className={`purchase-opt ${purchaseType === 'Digital' ? 'active' : ''}`}
                     onClick={() => setPurchaseType('Digital')}
                 >
-                  <span>💾 Bản Digital</span>
+                  <span>💾 Bản số</span>
                   <span>{price.toLocaleString('vi-VN')}₫</span>
                 </button>
                 <button
                     className={`purchase-opt ${purchaseType === 'Print' ? 'active' : ''}`}
                     onClick={() => setPurchaseType('Print')}
                 >
-                  <span>🖼️ Bản In</span>
+                  <span>🖼️ Bản in</span>
                   <span>{(price + 25000).toLocaleString('vi-VN')}₫</span>
                 </button>
               </div>

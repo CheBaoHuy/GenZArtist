@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import './Products.css';
 
 const API = 'http://localhost:8080/api/v1';
@@ -19,6 +20,25 @@ function Stars({ rating }) {
 function ProductCard({ product }) {
     const price = parseFloat(product.price);
     const avgRating = product.avgRating || 0;
+    const { addItem } = useCart();
+    const [added, setAdded] = useState(false);
+
+    const handleAdd = (e) => {
+        e.preventDefault();   // không điều hướng sang trang chi tiết
+        e.stopPropagation();
+        addItem({
+            id: product.id,
+            title: product.name,
+            artist: product.seller?.fullName || 'Artist',
+            grad: 'linear-gradient(135deg,#a855f7,#6366f1)',
+            type: 'Digital',
+            imageUrl: product.imageUrl,
+            price,
+        });
+        setAdded(true);
+        setTimeout(() => setAdded(false), 1300);
+    };
+
     return (
         <Link to={`/artwork/${product.id}`} className="pc-card">
             <div className="pc-thumb">
@@ -27,6 +47,14 @@ function ProductCard({ product }) {
                     : <div className="pc-img-placeholder">🎨</div>
                 }
                 <span className="pc-category">{product.category?.name || ''}</span>
+                <button
+                    className={`pc-add ${added ? 'added' : ''}`}
+                    onClick={handleAdd}
+                    title="Thêm vào giỏ"
+                    aria-label="Thêm vào giỏ"
+                >
+                    {added ? '✓ Đã thêm' : '🛒 Thêm'}
+                </button>
             </div>
             <div className="pc-info">
                 <p className="pc-name">{product.name}</p>
@@ -56,6 +84,7 @@ function ProductCard({ product }) {
 export default function Products() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const { count } = useCart();
 
     // Params from URL
     const initCategory = searchParams.get('category') || '';
@@ -139,13 +168,15 @@ export default function Products() {
                 <div className="prd-nav-center">
                 </div>
                 <div className="prd-nav-right">
-                    <Link to="/cart" className="prd-nav-cart">🛒</Link>
+                    <Link to="/cart" className="prd-nav-cart">
+                        🛒{count > 0 && <span className="prd-cart-badge">{count}</span>}
+                    </Link>
                     {user ? (
                         <Link to="/profile" className="prd-nav-btn outline">{user.fullName}</Link>
                     ) : (
                         <>
-                            <Link to="/login"    className="prd-nav-btn outline">Sign In</Link>
-                            <Link to="/register" className="prd-nav-btn solid">Join Free</Link>
+                            <Link to="/login"    className="prd-nav-btn outline">Đăng nhập</Link>
+                            <Link to="/register" className="prd-nav-btn solid">Tham gia miễn phí</Link>
                         </>
                     )}
                 </div>
@@ -187,6 +218,13 @@ export default function Products() {
                             </button>
                         ))}
                     </div>
+
+                    <button
+                        className="prd-custom-order-btn"
+                        onClick={() => navigate('/custom-order')}
+                    >
+                        ✏️ Đặt đơn vẽ theo yêu cầu
+                    </button>
                 </aside>
 
                 {/* ── MAIN GRID ── */}
