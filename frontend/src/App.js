@@ -10,6 +10,7 @@ import Checkout      from './pages/Checkout';
 import { CartProvider } from './context/CartContext';
 // import {Manager} from "./admin/Admin";
 import './App.css';
+import {Manager} from "./admin/Admin";
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
           <Route path="/products"           element={<Products />}      />
           <Route path="/cart"               element={<Cart />}          />
           <Route path="/checkout"           element={<Checkout />}      />
-          {/*<Route path="/admin/*"            element={<Manager />}       />*/}
+          <Route path="/admin/*"            element={<Manager />}       />
           <Route path="*"                   element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

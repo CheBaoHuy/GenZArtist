@@ -17,34 +17,34 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    /** Lấy danh sách reviews của sản phẩm — public */
-    @GetMapping("/product/{productId}")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getProductReviews(
-            @PathVariable Long productId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(new ApiResponse<>("success", null,
-                reviewService.getProductReviews(productId, page, size)));
-    }
-
-    /** Tạo review — cần đăng nhập */
-    @PostMapping("/product/{productId}")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> createReview(
-            @PathVariable Long productId,
-            @RequestBody ReviewRequest body) {
-        User currentUser = SecurityUtils.getCurrentUser();
-        Map<String, Object> result = reviewService.createProductReview(
-                currentUser, productId, body.getRating(), body.getComment());
-        return ResponseEntity.ok(new ApiResponse<>("success", "Đánh giá thành công!", result));
-    }
-
-    /** Xoá review — owner hoặc admin */
-    @DeleteMapping("/{reviewId}")
-    public ResponseEntity<ApiResponse<Void>> deleteReview(@PathVariable Long reviewId) {
-        User currentUser = SecurityUtils.getCurrentUser();
-        reviewService.deleteReview(currentUser, reviewId);
-        return ResponseEntity.ok(new ApiResponse<>("success", "Đã xoá đánh giá.", null));
-    }
+//    /** Lấy danh sách reviews của sản phẩm — public */
+//    @GetMapping("/product/{productId}")
+//    public ResponseEntity<ApiResponse<Map<String, Object>>> getProductReviews(
+//            @PathVariable Long productId,
+//            @RequestParam(defaultValue = "1") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        return ResponseEntity.ok(new ApiResponse<>("success", null,
+//                reviewService.getProductReviews(productId, page, size)));
+//    }
+//
+//    /** Tạo review — cần đăng nhập */
+//    @PostMapping("/product/{productId}")
+//    public ResponseEntity<ApiResponse<Map<String, Object>>> createReview(
+//            @PathVariable Long productId,
+//            @RequestBody ReviewRequest body) {
+//        User currentUser = SecurityUtils.getCurrentUser();
+//        Map<String, Object> result = reviewService.createProductReview(
+//                currentUser, productId, body.getRating(), body.getComment());
+//        return ResponseEntity.ok(new ApiResponse<>("success", "Đánh giá thành công!", result));
+//    }
+//
+//    /** Xoá review — owner hoặc admin */
+//    @DeleteMapping("/{reviewId}")
+//    public ResponseEntity<ApiResponse<Void>> deleteReview(@PathVariable Long reviewId) {
+//        User currentUser = SecurityUtils.getCurrentUser();
+//        reviewService.deleteReview(currentUser, reviewId);
+//        return ResponseEntity.ok(new ApiResponse<>("success", "Đã xoá đánh giá.", null));
+//    }
 
     /** Inner DTO cho request body */
     public static class ReviewRequest {
