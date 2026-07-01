@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,6 +21,12 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    // Danh sách hoạ sĩ (SELLER) cho form đặt đơn vẽ theo yêu cầu
+    @GetMapping("/artists")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getArtists() {
+        return ResponseEntity.ok(new ApiResponse<>("success", null, userService.getArtists()));
     }
 
     @GetMapping("/profile")

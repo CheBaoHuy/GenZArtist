@@ -148,10 +148,10 @@ public class ProductService {
 
     private Sort buildSort(String sort) {
         return switch (sort == null ? "newest" : sort.toLowerCase()) {
-            case "price_asc"  -> Sort.by(Sort.Direction.ASC,  "price");
+            case "price_asc" -> Sort.by(Sort.Direction.ASC, "price");
             case "price_desc" -> Sort.by(Sort.Direction.DESC, "price");
-            case "popular"    -> Sort.by(Sort.Direction.DESC, "viewCount");
-            default           -> Sort.by(Sort.Direction.DESC, "createdAt"); // newest
+            case "popular" -> Sort.by(Sort.Direction.DESC, "viewCount");
+            default -> Sort.by(Sort.Direction.DESC, "createdAt"); // newest
         };
     }
     // ===== Admin CRUD =====

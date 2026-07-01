@@ -212,6 +212,17 @@
   font-size: 0.88rem;
 }
 
+/* ---------- Session expired alert ---------- */
+.auth-alert {
+  margin-bottom: 1.2rem;
+  padding: 0.7rem 0.9rem;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 11px;
+  color: #fcd34d;
+  font-size: 0.85rem;
+}
+
 /* ---------- Social button ---------- */
 .social-login { margin-bottom: 1.2rem; }
 /* THÊM PHẦN NÀY */

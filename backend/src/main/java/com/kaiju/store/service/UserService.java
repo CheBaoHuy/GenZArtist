@@ -1,5 +1,6 @@
 package com.kaiju.store.service;
 
+import com.kaiju.store.enums.Role;
 import com.kaiju.store.model.User;
 import com.kaiju.store.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,13 +8,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    // Danh sách hoạ sĩ (SELLER) để chọn khi đặt đơn vẽ theo yêu cầu
+    public List<Map<String, Object>> getArtists() {
+        return userRepository.findByRoleOrderByFullNameAsc(Role.SELLER).stream()
+                .map(u -> {
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("id", u.getId());
+                    m.put("fullName", u.getFullName());
+                    m.put("avatarUrl", u.getAvatarUrl());
+                    return m;
+                })
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public Map<String, Object> updateProfile(User currentUser, Map<String, String> request) {
