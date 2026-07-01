@@ -1,0 +1,34 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-DemoApplication<game-wiki>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.kaiju.gamewiki.DemoApplication",
+            "projectName": "game-wiki",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-DemoApplication<game-wiki>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.kaiju.store.DemoApplication",
+            "projectName": "game-wiki",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-DemoApplication<store>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.kaiju.store.DemoApplication",
+            "projectName": "store",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
