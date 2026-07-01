@@ -1,13 +1,17 @@
 package com.kaiju.store.service;
 
 import com.kaiju.store.dto.PaginationDto;
+import com.kaiju.store.enums.Role;
 import com.kaiju.store.model.AuthorReview;
 import com.kaiju.store.model.Product;
 import com.kaiju.store.model.ProductReview;
+import com.kaiju.store.model.Review;
 import com.kaiju.store.model.User;
 import com.kaiju.store.repository.AuthorReviewRepository;
+import com.kaiju.store.repository.OrderItemRepository;
 import com.kaiju.store.repository.ProductRepository;
 import com.kaiju.store.repository.ProductReviewRepository;
+import com.kaiju.store.repository.ReviewRepository;
 import com.kaiju.store.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,10 +37,123 @@ public class ReviewService {
     private AuthorReviewRepository authorReviewRepository;
 
     @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    // ===================== ĐÁNH GIÁ SẢN PHẨM SAU KHI MUA (khách hàng) =====================
+    // Dùng entity Review (reviewer, seller, product, rating, comment) — gắn với trang chi tiết sản phẩm.
+
+    /** Lấy danh sách đánh giá của 1 sản phẩm — public, kèm rating trung bình & tổng số đánh giá */
+    public Map<String, Object> getProductReviews(Long productId, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Review> reviewPage = reviewRepository.findByProductId(productId, pageable);
+
+        List<Map<String, Object>> reviews = reviewPage.getContent().stream()
+                .map(this::toReviewItem)
+                .collect(Collectors.toList());
+
+        Double avgRating = reviewRepository.avgRatingByProduct(productId);
+        Long totalReviews = reviewRepository.countByProduct(productId);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("reviews", reviews);
+        data.put("avgRating", avgRating != null ? Math.round(avgRating * 10.0) / 10.0 : 0.0);
+        data.put("totalReviews", totalReviews);
+        data.put("pagination", new PaginationDto(page, reviewPage.getTotalPages(), reviewPage.getTotalElements()));
+        return data;
+    }
+
+    /**
+     * Tạo (hoặc cập nhật nếu đã từng đánh giá) đánh giá cho sản phẩm.
+     * Chỉ cho phép khi người dùng đã MUA và ĐÃ THANH TOÁN XONG (đơn hàng COMPLETED) sản phẩm này.
+     */
+    @Transactional
+    public Map<String, Object> createOrUpdateProductReview(User currentUser, Long productId, Integer rating, String comment) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm."));
+
+        if (product.getSeller() != null && product.getSeller().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("Bạn không thể tự đánh giá sản phẩm của mình.");
+        }
+
+        boolean purchased = orderItemRepository.existsCompletedPurchase(currentUser.getId(), productId);
+        if (!purchased) {
+            throw new RuntimeException("Bạn cần mua và hoàn tất thanh toán sản phẩm này trước khi đánh giá.");
+        }
+
+        Integer safeRating = parseRating(rating);
+
+        Optional<Review> existing = reviewRepository.findByReviewerIdAndProductId(currentUser.getId(), productId);
+        Review review = existing.orElseGet(Review::new);
+        review.setReviewer(currentUser);
+        review.setProduct(product);
+        review.setSeller(product.getSeller());
+        review.setRating(safeRating);
+        review.setComment(comment);
+
+        return toReviewItem(reviewRepository.save(review));
+    }
+
+    /** Xoá đánh giá — chỉ chủ đánh giá hoặc admin */
+    @Transactional
+    public void deleteReview(User currentUser, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đánh giá."));
+
+        boolean isOwner = review.getReviewer() != null && review.getReviewer().getId().equals(currentUser.getId());
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+        if (!isOwner && !isAdmin) {
+            throw new RuntimeException("Bạn không có quyền xoá đánh giá này.");
+        }
+        reviewRepository.delete(review);
+    }
+
+    /**
+     * Kiểm tra quyền đánh giá của người dùng hiện tại với 1 sản phẩm:
+     * - đã mua (đơn COMPLETED) chưa
+     * - đã từng đánh giá chưa (nếu có, trả kèm đánh giá cũ để hiển thị lại lên form cho sửa)
+     */
+    public Map<String, Object> getMyReviewStatus(User currentUser, Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new RuntimeException("Không tìm thấy sản phẩm.");
+        }
+        boolean purchased = orderItemRepository.existsCompletedPurchase(currentUser.getId(), productId);
+        Optional<Review> existing = reviewRepository.findByReviewerIdAndProductId(currentUser.getId(), productId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("purchased", purchased);
+        result.put("alreadyReviewed", existing.isPresent());
+        existing.ifPresent(r -> result.put("myReview", toReviewItem(r)));
+        return result;
+    }
+
+    private Map<String, Object> toReviewItem(Review review) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("id", review.getId());
+        item.put("rating", review.getRating());
+        item.put("comment", review.getComment());
+        item.put("createdAt", review.getCreatedAt());
+        if (review.getProduct() != null) {
+            item.put("productId", review.getProduct().getId());
+        }
+        if (review.getReviewer() != null) {
+            User r = review.getReviewer();
+            Map<String, Object> reviewer = new HashMap<>();
+            reviewer.put("id", r.getId());
+            reviewer.put("fullName", r.getFullName());
+            reviewer.put("avatarUrl", r.getAvatarUrl() != null ? r.getAvatarUrl() : "");
+            item.put("reviewer", reviewer);
+        }
+        return item;
+    }
 
     // ===================== ĐÁNH GIÁ SẢN PHẨM =====================
 

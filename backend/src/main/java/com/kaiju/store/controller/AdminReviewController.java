@@ -16,13 +16,13 @@ public class AdminReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    // ===================== ĐÁNH GIÁ SẢN PHẨM =====================
+    // ===================== ĐÁNH GIÁ SẢN PHẨM (ADMIN) =====================
 
     @GetMapping("/product-reviews")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getProductReviews(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(new ApiResponse<>("success", null, reviewService.getProductReviews(null, page, size)));
+        return ResponseEntity.ok(new ApiResponse<>("success", null, reviewService.getProductReviews(page, size)));
     }
 
     // @GetMapping("/product-reviews/{id}")
