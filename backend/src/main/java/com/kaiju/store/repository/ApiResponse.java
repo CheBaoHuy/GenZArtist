@@ -1,5 +1,8 @@
 package com.kaiju.store.repository;
 
+
+
+@Builder
 public class ApiResponse<T> {
     private String status;
     private String message;

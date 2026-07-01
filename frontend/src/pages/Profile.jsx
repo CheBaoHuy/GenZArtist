@@ -1,115 +1,45 @@
-import { useState, useEffect } from 'react';
-import { Link, useParams,  } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import './Profile.css';
 import axios from 'axios';
 
+// Giả sử bạn đã tạo UserContext như đã bàn
+// import { UserContext } from '../context/UserContext';
 
-/* ── Mock data ─────────────────────────────────────── */
-// const PROFILE = {
-//   username: 'luna.exe',
-//   displayName: 'Luna.exe',
-//   bio: '🎨 Digital artist & UI designer. I paint with code and pixels. Open for commissions ✨',
-//   location: 'Hà Nội, Vietnam',
-//   website: 'luna-art.io',
-//   joined: 'March 2024',
-//   followers: 28400,
-//   following: 312,
-//   works: 142,
-//   likes: 89200,
-//   verified: true,
-//   coverGrad: 'linear-gradient(135deg,#560bad 0%,#f72585 50%,#4cc9f0 100%)',
-//   avatarGrad: 'linear-gradient(135deg,#f72585,#7209b7)',
-// };
-
-
-const ARTWORKS = [
-  { id:1,  title:'Neon Dreams',      grad:'linear-gradient(135deg,#f72585,#7209b7)', likes:2841, tag:'Digital',  views:'18.2k' },
-  { id:2,  title:'Void Walker',      grad:'linear-gradient(135deg,#3a0ca3,#4cc9f0)', likes:1923, tag:'Concept',  views:'11.4k' },
-  { id:3,  title:'Cherry Blossom',   grad:'linear-gradient(135deg,#ff6b6b,#ffd93d)', likes:3512, tag:'AI Art',   views:'24.1k' },
-  { id:4,  title:'Cyber Temple',     grad:'linear-gradient(135deg,#06d6a0,#118ab2)', likes:987,  tag:'Pixel',    views:'7.8k'  },
-  { id:5,  title:'Astral Drift',     grad:'linear-gradient(135deg,#560bad,#f72585)', likes:4210, tag:'Abstract', views:'31.0k' },
-  { id:6,  title:'Lo-Fi City',       grad:'linear-gradient(135deg,#ff9a3c,#ff6b6b)', likes:2103, tag:'Illus.',   views:'15.6k' },
-  { id:7,  title:'Glass Heart',      grad:'linear-gradient(135deg,#4cc9f0,#7209b7)', likes:1678, tag:'Digital',  views:'12.3k' },
-  { id:8,  title:'Midnight Rave',    grad:'linear-gradient(135deg,#240046,#ff6b6b)', likes:3301, tag:'Digital',  views:'22.0k' },
-  { id:9,  title:'Grunge Bloom',     grad:'linear-gradient(135deg,#06d6a0,#f72585)', likes:890,  tag:'Mixed',    views:'6.7k'  },
-];
-
-const COLLECTIONS = [
-  { id:1, name:'Neon Series',    count:12, grad:'linear-gradient(135deg,#f72585,#7209b7)' },
-  { id:2, name:'Cyber Dreams',   count:8,  grad:'linear-gradient(135deg,#3a0ca3,#4cc9f0)' },
-  { id:3, name:'Lo-Fi Vibes',    count:15, grad:'linear-gradient(135deg,#ff9a3c,#ff6b6b)' },
-  { id:4, name:'Abstract Void',  count:6,  grad:'linear-gradient(135deg,#560bad,#06d6a0)' },
-];
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
 export default function Profile() {
-
+  // Khi có UserContext, chúng ta sẽ dùng: const { user, logout } = useContext(UserContext);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('works');
   const [followed, setFollowed] = useState(false);
   const [likedIds, setLikedIds] = useState([]);
 
-  const getRole = localStorage.getItem("role")
-  console.log(getRole)
-  const { profileName } = useParams();
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const toggleLike = (id) => {
-    setLikedIds(prev => prev.includes(id)
-      ? prev.filter(x => x !== id)
-      : [...prev, id]
-    );
-  };
-
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    phoneNumber: '',
-    avatarUrl: '',
-    address: '',
-  });
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) return setLoading(false);
+  const [formData, setFormData] = useState({});
 
-    axios.get('http://localhost:8080/api/v1/users/profile', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then(res => {
-      setProfile(res.data.data || res.data);
-    })
-    .catch(err => console.error(err))
-    .finally(() => setLoading(false));
-  }, []);
-  useEffect(() => {
-    if (profile) {
-      setFormData({
-        fullName: profile.fullName || '',
-        phoneNumber: profile.phoneNumber || '',
-        avatarUrl: profile.avatarUrl || '',
-        address: profile.address || '',
-      });
-    }
-  }, [profile]);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    try {
-      const response = await axios.put('http://localhost:8080/api/v1/users/profile', formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setProfile(response.data.data || response.data);
-      setIsEditing(false);
-    } catch (error) {
-      console.error(error);
-    }
+    console.log("Đang cập nhật thông tin:", formData);
+    // TODO: Gọi API để cập nhật thông tin người dùng
+    // try {
+    //   const response = await axios.put(`${API_URL}/api/v1/users/me`, formData);
+    //   setProfile(response.data.data);
+    //   setIsEditing(false);
+    // } catch (error) {
+    //   console.error('Lỗi khi cập nhật:', error);
+    // }
+    alert('Chức năng đang được phát triển');
+    setIsEditing(false);
   };
-  // const handleLogout = () => {
+
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
     localStorage.removeItem('role');
     window.location.href = '/login';
@@ -119,11 +49,11 @@ export default function Profile() {
   if (loading) return <div>Đang tải hồ sơ...</div>;
   if (!profile) return <div>Không tìm thấy hồ sơ</div>;
 
+  if (loading) return <div className="loading-screen">Đang tải trang cá nhân...</div>;
+  if (!profile) return <div className="error-screen">Không thể tải thông tin người dùng. Vui lòng <a href="/login">đăng nhập</a> lại.</div>;
 
   return (
     <div className="profile-page">
-
-      {/* ── NAVBAR ── */}
       <nav className="pf-nav">
         <Link to="/" className="pf-nav-logo">🎨 <span>GenZArtist</span></Link>
         <div className="pf-nav-right">
@@ -139,33 +69,32 @@ export default function Profile() {
         </div>
       </nav>
 
-      {/* ── COVER ── */}
-      <div className="profile-cover" style={{ background: profile.coverGrad }}>
+      <div className="profile-cover" style={{ background: 'linear-gradient(135deg,#560bad 0%,#f72585 50%,#4cc9f0 100%)' }}>
         <div className="cover-overlay"></div>
       </div>
 
-      {/* ── HEADER ── */}
       <div className="profile-header-wrap">
         <div className="profile-header">
           <div className="profile-avatar-wrap">
-            <div className="profile-avatar" style={{ background: profile.avatarGrad }}>
-              <span>L</span>
+            <div className="profile-avatar" style={{ background: 'linear-gradient(135deg,#f72585,#7209b7)' }}>
+              {/* Sử dụng avatarUrl từ profile nếu có */}
+              {profile.avatarUrl ? <img src={profile.avatarUrl} alt={profile.fullName} /> : <span>{profile.fullName?.charAt(0)}</span>}
             </div>
-            {profile.verified && <div className="profile-verified">✓</div>}
+            {/* {profile.verified && <div className="profile-verified">✓</div>} */}
           </div>
 
-          {/* <div className="profile-info">
-            <div className="profile-name-row">
-              <h1 className="profile-name">{profile.displayName}</h1>
-              <span className="profile-username">@{profileName || profile.username}</span>
-            </div>
-            <p className="profile-bio">{profile.bio}</p>
-            <div className="profile-meta">
-              <span>📍 {profile.location}</span>
-              <a href={`https://${profile.website}`} className="profile-web">🔗 {profile.website}</a>
-              <span>📅 Joined {profile.joined}</span>
-            </div>
-          </div> */}
+          <div className="profile-info">
+             <div className="profile-name-row">
+               <h1 className="profile-name">{profile.fullName}</h1>
+               <span className="profile-username">@{profile.username || 'username'}</span>
+             </div>
+             <p className="profile-bio">{profile.bio || 'Chưa có tiểu sử'}</p>
+             <div className="profile-meta">
+               <span>📍 {profile.address || 'Chưa cập nhật'}</span>
+               {/* <a href={`https://${profile.website}`} className="profile-web">🔗 {profile.website}</a> */}
+               <span>📅 Đã tham gia {new Date(profile.createdAt).toLocaleDateString('vi-VN')}</span>
+             </div>
+           </div>
 
           <div className="profile-actions">
             <button
@@ -178,6 +107,9 @@ export default function Profile() {
             <button className="more-btn" onClick={() => setIsEditing(true)}>
               Chỉnh sửa hồ sơ
             </button>
+            <button className="more-btn" onClick={handleLogout}>Đăng xuất</button>
+          </div>
+        </div>
 
 
             {isEditing ? (
@@ -211,9 +143,9 @@ export default function Profile() {
               ) : null}
             <button className="more-btn" onClick={handleLogout}>Đăng xuất</button>
           </div>
-        </div>
+        )}
 
-        {/* ── STATS ── */}
+        {/* Các chỉ số thống kê - Cần API để lấy dữ liệu này */}
         <div className="profile-stats">
           {[
             { label: 'Tác phẩm', value: profile.works ? profile.works.toLocaleString() : '0' },
@@ -229,7 +161,6 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* ── TABS ── */}
       <div className="profile-tabs-wrap">
         <div className="profile-tabs">
           {['works', 'collections', 'about'].map(t => (
@@ -245,7 +176,6 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* ── CONTENT ── */}
       <div className="profile-content">
 
         {/* Works tab */}
@@ -316,7 +246,6 @@ export default function Profile() {
         )}
       </div>
 
-      {/* ── FOOTER ── */}
       <footer className="pf-footer">
         <p>© 2026 GenZArtist · <Link to="/">Trang chủ</Link> · <a href="#terms">Điều khoản</a> · <a href="#privacy">Bảo mật</a></p>
       </footer>

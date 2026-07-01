@@ -1,4 +1,6 @@
 package com.kaiju.store.config;
+import java.text.Normalizer;
+
 
 import com.kaiju.store.enums.ProductStatus;
 import com.kaiju.store.enums.Role;
@@ -44,13 +46,33 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedCategories() {
-        String[] names = {"Sơn dầu", "Màu nước", "Tranh chì", "Tranh kỹ thuật số", "Anime Style", "Chibi", "3D Model", "Background", "Live2D"};
+        String[] names = {
+                "Sơn dầu", "Màu nước", "Tranh chì", "Tranh kỹ thuật số",
+                "Anime Style", "Chibi", "3D Model", "Background", "Live2D"
+        };
+
         for (String name : names) {
             Category cat = new Category();
             cat.setName(name);
+            cat.setSlug(toSlug(name)); // thêm dòng này
             categoryRepository.save(cat);
         }
     }
+    
+    private String toSlug(String input) {
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+
+        return normalized
+                .replaceAll("\\p{M}", "")
+                .replace("đ", "d")
+                .replace("Đ", "D")
+                .toLowerCase()
+                .trim()
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .replaceAll("\\s+", "-")
+                .replaceAll("-+", "-");
+    }
+
 
     private void seedUsers() {
         if (userRepository.findByEmail("admin@pixelhub.com").isEmpty()) {

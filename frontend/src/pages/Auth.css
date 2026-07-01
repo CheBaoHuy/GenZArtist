@@ -225,6 +225,24 @@
 
 /* ---------- Social button ---------- */
 .social-login { margin-bottom: 1.2rem; }
+/* THÊM PHẦN NÀY */
+.social-login-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.social-btn.facebook-btn {
+  background-color: #1877F2;
+  border-color: #1877F2;
+  color: white;
+}
+
+.social-btn.facebook-btn:hover {
+  background-color: #166fe5;
+  border-color: #166fe5;
+}
+/* KẾT THÚC PHẦN THÊM */
+
 .social-btn {
   width: 100%;
   display: flex;
@@ -493,3 +511,29 @@
 @media (max-width: 400px) {
   .auth-form-panel { padding: 1.75rem 1.25rem; }
 }
+
+.social-login { margin-bottom: 1.2rem; }
+
+/* THÊM PHẦN NÀY */
+.social-login-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.social-btn.facebook-btn {
+  background-color: #1877F2;
+  border-color: #1877F2;
+  color: white;
+}
+
+.social-btn.facebook-btn:hover {
+  background-color: #166fe5;
+  border-color: #166fe5;
+}
+/* KẾT THÚC PHẦN THÊM */
+
+.social-btn {
+  width: 100%;
+  /* ... các style cũ của social-btn ... */
+}
+

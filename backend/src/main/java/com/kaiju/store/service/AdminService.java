@@ -110,6 +110,7 @@ public class AdminService {
         if (request.get("role") != null) {
             user.setRole(parseRole(request.get("role")));
         }
+
         if (request.get("status") != null) {
             user.setStatus(parseStatus(request.get("status")));
         }
@@ -133,25 +134,30 @@ public class AdminService {
         return value == null ? null : value.toString();
     }
 
-    private Role parseRole(Object value) {
-        if (value == null) {
-            return Role.BUYER;
-        }
-        try {
-            return Role.valueOf(value.toString().trim().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Quyền không hợp lệ: " + value);
-        }
+    private Role parseRole(Object roleStr) {
+    if (roleStr == null) {
+        return Role.BUYER; // Giá trị mặc định nếu null
     }
-
+    try {
+        return Role.valueOf(roleStr.toString().trim().toUpperCase());
+    } catch (IllegalArgumentException e) {
+        return Role.BUYER; // Trả về mặc định nếu chuỗi truyền vào sai chính tả
+    }
+}
     private UserStatus parseStatus(Object value) {
         if (value == null) {
-            return UserStatus.ACTIVE;
+            return UserStatus.ACTIVE; // Giá trị mặc định nếu null
         }
+
+        String status = value.toString()
+            .trim()
+            .toUpperCase()
+            .replace("ROLE_", "");
+
         try {
-            return UserStatus.valueOf(value.toString().trim().toUpperCase());
+        return UserStatus.valueOf(status);
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Trạng thái không hợp lệ: " + value);
+            throw new RuntimeException("Trạng thái không hợp lệ. Chỉ chấp nhận: ACTIVE, INACTIVE, BANNED");
         }
     }
 }

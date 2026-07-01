@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-do
 import './Auth.css';
 import axios from 'axios';
 
+
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ function Login() {
   const redirectTo = location.state?.redirect || '/';
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -42,13 +43,11 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="auth-wrapper">
-      {/* Animated background blobs */}
       <div className="blob blob-1"></div>
       <div className="blob blob-2"></div>
       <div className="blob blob-3"></div>
 
       <div className="auth-container">
-        {/* Left panel */}
         <div className="auth-brand-panel">
           <div className="brand-content">
             <div className="brand-logo">
@@ -78,13 +77,47 @@ const handleSubmit = async (e) => {
           </div>
         </div>
 
-        {/* Right panel – form */}
         <div className="auth-form-panel">
           <div className="form-header">
             <h2>Chào mừng trở lại 👋</h2>
             <p>Đăng nhập để tiếp tục hành trình sáng tạo</p>
           </div>
 
+          <div className="social-login">
+            
+            <div className="social-login-buttons">
+              <a
+                  href="/"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSocialLogin('google');
+                  }}
+                  className="social-btn"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                <svg width="20" height="20" viewBox="0 0 48 48">
+                  <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/>
+                  <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/>
+                  <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.3 35.3 26.8 36 24 36c-5.2 0-9.7-3.4-11.3-8H6.3C9.7 35.6 16.3 44 24 44z"/>
+                  <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.4l6.2 5.2C37 38.1 44 33 44 24c0-1.3-.1-2.6-.4-3.9z"/>
+                </svg>
+                Google
+              </a>
+              <a
+                  href="/"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSocialLogin('facebook');
+                  }}
+                  className="social-btn facebook-btn"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-1.5c-1.1 0-1.5.9-1.5 1.5V12h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z"/>
+                </svg>
+                Facebook
+              </a>
+            </div>
           {sessionExpired && (
             <div className="auth-alert" role="alert">
               ⏱️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.

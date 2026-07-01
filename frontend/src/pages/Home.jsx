@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Home.css';
+import { mockGetTrendingProducts } from '../api/mock';
 
 const API = 'http://localhost:8080/api/v1';
 
@@ -59,13 +60,10 @@ export default function Home() {
 
   /* ── Fetch trending products ── */
   useEffect(() => {
-    fetch(`${API}/products/trending?limit=6`)
-        .then(r => r.json())
-        .then(res => {
-          if (res.status === 'success') setTrending(res.data.products || []);
-        })
-        .catch(() => {})
-        .finally(() => setTrendingLoading(false));
+    setTimeout(() => {
+      setTrending(mockGetTrendingProducts());
+      setTrendingLoading(false);
+    }, 500);
   }, []);
 
   /* ── Fetch categories ── */

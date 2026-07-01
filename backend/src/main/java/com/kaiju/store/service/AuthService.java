@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kaiju.store.model.User;
+import com.kaiju.store.repository.RegisterRequest;
 import com.kaiju.store.repository.UserRepository;
 import com.kaiju.store.util.JwtUtil;
 
@@ -28,26 +29,26 @@ public class AuthService {
     @Autowired
     private TokenBlacklistService tokenBlacklistService;
 
-    public User register(String email, String password, String fullName, String phoneNumber, String roleStr,
-            String avatarUrl) {
-        if (userRepository.findByEmail(email).isPresent()) {
+    public User register(RegisterRequest request) {
+
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email đã được sử dụng!");
         }
 
         User newUser = new User();
-        newUser.setEmail(email);
-        newUser.setFullName(fullName);
-        newUser.setPhoneNumber(phoneNumber);
-        newUser.setAvatarUrl(avatarUrl);
+        newUser.setEmail(request.getEmail());
+        newUser.setFullName(request.getFullName());
+        newUser.setPhoneNumber(request.getPhoneNumber());
+        newUser.setAvatarUrl(request.getAvatarUrl());
         try {
-            newUser.setRole(Role.valueOf(roleStr.toUpperCase()));
+            newUser.setRole(Role.valueOf(request.getRole().toUpperCase()));
         } catch (Exception e) {
             newUser.setRole(Role.BUYER);
         }
-        newUser.setPassword(passwordEncoder.encode(password));
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setVerificationToken(UUID.randomUUID().toString());
         User savedUser = userRepository.save(newUser);
-        System.out.println("[AuthService] Verification token for " + email + ": " + savedUser.getVerificationToken());
+        System.out.println("[AuthService] Verification token for " + request.getEmail() + ": " + savedUser.getVerificationToken());
         return savedUser;
     }
 
