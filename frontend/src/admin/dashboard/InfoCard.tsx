@@ -1,34 +1,61 @@
-import React from 'react';
-import {SvgIconProps, Card, CardContent, Typography, Box } from "@mui/material";
+import React from "react";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  SvgIconProps,
+} from "@mui/material";
 
 interface InfoCardProps {
-    icon: React.ReactElement<SvgIconProps>;
-    title: string;
-    content: any;
-    iconColor?: string;
+  icon: React.ReactElement<SvgIconProps>;
+  title: string;
+  content: React.ReactNode;
+  iconColor?: string;
 }
-export const InfoCard = ({ icon, title, content, iconColor = 'inherit' } : InfoCardProps) => {
-    return (
-        <Card style={{ margin: 10}}>
-            <CardContent>
-                <Box display="flex" alignItems="center" justifyContent={"space-between"}>
-                    <Box
-                        mr={2}
-                        // display="flex"
-                        // justifyContent="center"
-                        // alignItems="center"
-                        // bgcolor="#f0f0f0"
-                        // borderRadius="50%"
-                        color={iconColor}
-                    >
-                        {React.cloneElement(icon, { fontSize: 'large' })}
-                    </Box>
-                    <Box>
-                        <Typography variant="subtitle1" color="textSecondary">{title}</Typography>
-                        <Typography variant="h5" textAlign={"right"}>{content}</Typography>
-                    </Box>
-                </Box>
-            </CardContent>
-        </Card>
-    );
+
+export const InfoCard = ({
+  icon,
+  title,
+  content,
+  iconColor = "inherit",
+}: InfoCardProps) => {
+  return (
+    <Card style={{ margin: 10 }}>
+      <CardContent>
+        <Box
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box
+            style={{
+              marginRight: 16,
+              color: iconColor,
+            }}
+          >
+            {React.cloneElement(icon, { fontSize: "large" })}
+          </Box>
+
+          <Box>
+            <Typography
+              variant="subtitle1"
+              style={{ color: "#666" }}
+            >
+              {title}
+            </Typography>
+
+            <Typography
+              variant="h5"
+              style={{ textAlign: "right" }}
+            >
+              {content}
+            </Typography>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
 };

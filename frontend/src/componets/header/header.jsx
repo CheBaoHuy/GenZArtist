@@ -1,11 +1,18 @@
-import { useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Header.css';
-import { UserProvider } from '../../context/UserProvider'; // Đường dẫn có thể cần điều chỉnh
+import { authService } from '../../auth/authService';
 
 function Header() {
-    const { user, logout } = useContext(UserProvider);
-    console.log('User in Header:', user); // Thêm dòng này để kiểm tra giá trị của user
+    const [user, setUser] = useState(authService.getUser());
+
+    const logout = () => {
+        authService.logout();
+        setUser(null);
+        window.location.reload();
+    };
+    
+    console.log('User in Header:', user);
     return (
         <header class="header">
             <div class="logo">
@@ -36,3 +43,5 @@ function Header() {
         </header>
     );
 }
+
+export default Header;

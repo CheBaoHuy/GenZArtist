@@ -40,9 +40,14 @@ export const PendingOrders = ({ pendingOrders }: { pendingOrders: any[] }) => {
                             </ListItem>
                         ))}
                         {pendingOrders.length === 0 && (
-                            <Typography variant="caption" color="textSecondary" align="center" display="block">
+                           <Typography
+                                variant="caption"
+                                color="textSecondary"
+                                align="center"
+                                style={{ display: 'block' }}
+                                >
                                 Không có đơn nào đang chờ
-                            </Typography>
+                                </Typography>
                         )}
                     </List>
                 </Box>

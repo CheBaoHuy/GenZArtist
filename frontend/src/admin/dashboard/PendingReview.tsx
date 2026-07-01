@@ -41,7 +41,12 @@ export const PendingReviews = ({ pendingReviews }: { pendingReviews: any[] }) =>
                             </ListItem>
                         ))}
                         {pendingReviews.length === 0 && (
-                            <Typography variant="caption" color="textSecondary" align="center" display="block">
+                            <Typography
+                                variant="caption"
+                                color="textSecondary"
+                                align="center"
+                                sx={{ display: 'block' }}
+                                >
                                 Chưa có đánh giá
                             </Typography>
                         )}

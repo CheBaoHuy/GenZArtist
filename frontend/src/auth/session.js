@@ -5,7 +5,10 @@ import { jwtDecode } from 'jwt-decode';
 const SKEW_SECONDS = 5; // trừ hao lệch giờ client/server
 
 export function getToken() {
+  const token = localStorage.getItem('token');
+  console.log('Token in getToken:', token);
   return localStorage.getItem('token');
+  
 }
 
 export function decodeToken(token = getToken()) {
