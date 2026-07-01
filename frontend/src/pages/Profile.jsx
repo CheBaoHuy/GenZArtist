@@ -1,21 +1,24 @@
-import { useState, useEffect, useContext } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Profile.css';
-import axios from 'axios';
+import { authService } from '../auth/authService';
 
-// Giả sử bạn đã tạo UserContext như đã bàn
-// import { UserContext } from '../context/UserContext';
-
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+// Mock data, bạn sẽ thay thế bằng dữ liệu thật từ API
+const ARTWORKS = [];
+const COLLECTIONS = [];
 
 export default function Profile() {
-  // Khi có UserContext, chúng ta sẽ dùng: const { user, logout } = useContext(UserContext);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user] = useState(authService.getUser());
+  
+  const logout = () => {
+    authService.logout();
+    window.location.href = '/login';
+  };
+  
+  console.log('User in Profile:', user);
   const [tab, setTab] = useState('works');
   const [followed, setFollowed] = useState(false);
   const [likedIds, setLikedIds] = useState([]);
-
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
 
@@ -26,31 +29,14 @@ export default function Profile() {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     console.log("Đang cập nhật thông tin:", formData);
-    // TODO: Gọi API để cập nhật thông tin người dùng
-    // try {
-    //   const response = await axios.put(`${API_URL}/api/v1/users/me`, formData);
-    //   setProfile(response.data.data);
-    //   setIsEditing(false);
-    // } catch (error) {
-    //   console.error('Lỗi khi cập nhật:', error);
-    // }
     alert('Chức năng đang được phát triển');
     setIsEditing(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('role');
-    window.location.href = '/login';
-  }
-
-
-  if (loading) return <div>Đang tải hồ sơ...</div>;
-  if (!profile) return <div>Không tìm thấy hồ sơ</div>;
-
-  if (loading) return <div className="loading-screen">Đang tải trang cá nhân...</div>;
-  if (!profile) return <div className="error-screen">Không thể tải thông tin người dùng. Vui lòng <a href="/login">đăng nhập</a> lại.</div>;
+  const toggleLike = (id) => {
+    setLikedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+  if (!user) return <div className="loading-screen">Đang tải trang cá nhân...</div>;
 
   return (
     <div className="profile-page">
@@ -58,11 +44,11 @@ export default function Profile() {
         <Link to="/" className="pf-nav-logo">🎨 <span>GenZArtist</span></Link>
         <div className="pf-nav-right">
           <Link to="/" className="pf-nav-link">Trang chủ</Link>
-          {getRole === 'BUYER' &&
+          {user.role === 'BUYER' &&
               <Link className="pf-nav-link" to="/orders">📦 Đơn hàng của tôi</Link>}
-          {getRole === 'SELLER' &&
+          {user.role === 'SELLER' &&
               <Link className="pf-nav-link" to="/seller/orders">🎨 Đơn vẽ được đặt</Link>}
-          {getRole === 'ADMIN' ?
+          {user.role === 'ADMIN' ?
               <li id={"manager_navigate"} className="menu-item">
                 <Link className="pf-nav-link" to={"/admin"}>Quản lý</Link>
               </li> : ""}
@@ -77,22 +63,19 @@ export default function Profile() {
         <div className="profile-header">
           <div className="profile-avatar-wrap">
             <div className="profile-avatar" style={{ background: 'linear-gradient(135deg,#f72585,#7209b7)' }}>
-              {/* Sử dụng avatarUrl từ profile nếu có */}
-              {profile.avatarUrl ? <img src={profile.avatarUrl} alt={profile.fullName} /> : <span>{profile.fullName?.charAt(0)}</span>}
+              {user.avatarUrl ? <img src={user.avatarUrl} alt={user.fullName} /> : <span>{user.fullName?.charAt(0)}</span>}
             </div>
-            {/* {profile.verified && <div className="profile-verified">✓</div>} */}
           </div>
 
           <div className="profile-info">
              <div className="profile-name-row">
-               <h1 className="profile-name">{profile.fullName}</h1>
-               <span className="profile-username">@{profile.username || 'username'}</span>
+               <h1 className="profile-name">{user.fullName}</h1>
+               <span className="profile-username">@{user.username || 'username'}</span>
              </div>
-             <p className="profile-bio">{profile.bio || 'Chưa có tiểu sử'}</p>
+             <p className="profile-bio">{user.bio || 'Chưa có tiểu sử'}</p>
              <div className="profile-meta">
-               <span>📍 {profile.address || 'Chưa cập nhật'}</span>
-               {/* <a href={`https://${profile.website}`} className="profile-web">🔗 {profile.website}</a> */}
-               <span>📅 Đã tham gia {new Date(profile.createdAt).toLocaleDateString('vi-VN')}</span>
+               <span>📍 {user.address || 'Chưa cập nhật'}</span>
+               <span>📅 Đã tham gia {new Date(user.createdAt).toLocaleDateString('vi-VN')}</span>
              </div>
            </div>
 
@@ -107,51 +90,46 @@ export default function Profile() {
             <button className="more-btn" onClick={() => setIsEditing(true)}>
               Chỉnh sửa hồ sơ
             </button>
-            <button className="more-btn" onClick={handleLogout}>Đăng xuất</button>
+            <button className="more-btn" onClick={logout}>Đăng xuất</button>
           </div>
         </div>
 
+        {isEditing && (
+          <div className="profile-edit-modal" onClick={() => setIsEditing(false)}>
+            <div className="profile-edit-panel" onClick={(e) => e.stopPropagation()}>
+              <form className="profile-edit-form" onSubmit={handleUpdateProfile}>
+              <label>
+                Họ và tên
+                <input name="fullName" defaultValue={user.fullName} onChange={handleChange} />
+              </label>
+              <label>
+                Số điện thoại
+                <input name="phoneNumber" defaultValue={user.phoneNumber} onChange={handleChange} />
+              </label>
+              <label>
+                Ảnh đại diện
+                <input name="avatarUrl" defaultValue={user.avatarUrl} onChange={handleChange} />
+              </label>
+              <label>
+                Địa chỉ
+                <input name="address" defaultValue={user.address} onChange={handleChange} />
+              </label>
 
-            {isEditing ? (
-              <div className="profile-edit-modal" onClick={() => setIsEditing(false)}>
-                <div className="profile-edit-panel" onClick={(e) => e.stopPropagation()}>
-                  <form className="profile-edit-form" onSubmit={handleUpdateProfile}>
-                  <label>
-                    Họ và tên
-                    <input name="fullName" value={formData.fullName} onChange={handleChange} />
-                  </label>
-                  <label>
-                    Số điện thoại
-                    <input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
-                  </label>
-                  <label>
-                    Ảnh đại diện
-                    <input name="avatarUrl" value={formData.avatarUrl} onChange={handleChange} />
-                  </label>
-                  <label>
-                    Địa chỉ
-                    <input name="address" value={formData.address} onChange={handleChange} />
-                  </label>
-
-                  <div className="form-actions">
-                  <button type="submit">Lưu</button>
-                  <button type="button" onClick={() => setIsEditing(false)}>Huỷ</button>
-                </div>
-                </form>
-              </div>
-              </div>
-              ) : null}
-            <button className="more-btn" onClick={handleLogout}>Đăng xuất</button>
+              <div className="form-actions">
+              <button type="submit">Lưu</button>
+              <button type="button" onClick={() => setIsEditing(false)}>Huỷ</button>
+            </div>
+            </form>
+          </div>
           </div>
         )}
 
-        {/* Các chỉ số thống kê - Cần API để lấy dữ liệu này */}
         <div className="profile-stats">
           {[
-            { label: 'Tác phẩm', value: profile.works ? profile.works.toLocaleString() : '0' },
-            { label: 'Người theo dõi', value: profile.followers ? (profile.followers / 1000).toFixed(1) + 'k' : '0' },
-            { label: 'Đang theo dõi', value: profile.following ?? 0 },
-            { label: 'Tổng lượt thích', value: profile.likes ? (profile.likes / 1000).toFixed(1) + 'k' : '0' },
+            { label: 'Tác phẩm', value: user.works ? user.works.toLocaleString() : '0' },
+            { label: 'Người theo dõi', value: user.followers ? (user.followers / 1000).toFixed(1) + 'k' : '0' },
+            { label: 'Đang theo dõi', value: user.following ?? 0 },
+            { label: 'Tổng lượt thích', value: user.likes ? (user.likes / 1000).toFixed(1) + 'k' : '0' },
           ].map(s => (
             <div className="pf-stat" key={s.label}>
               <span className="pf-stat-val">{s.value}</span>
@@ -169,7 +147,7 @@ export default function Profile() {
               className={`profile-tab ${tab === t ? 'active' : ''}`}
               onClick={() => setTab(t)}
             >
-              {t === 'works' ? `🖼️ Tác phẩm (${profile.works})` :
+              {t === 'works' ? `🖼️ Tác phẩm (${user.works || 0})` :
                t === 'collections' ? `📁 Bộ sưu tập` : '👤 Giới thiệu'}
             </button>
           ))}
@@ -178,7 +156,6 @@ export default function Profile() {
 
       <div className="profile-content">
 
-        {/* Works tab */}
         {tab === 'works' && (
           <div className="works-grid">
             {ARTWORKS.map(art => (
@@ -204,7 +181,6 @@ export default function Profile() {
           </div>
         )}
 
-        {/* Collections tab */}
         {tab === 'collections' && (
           <div className="collections-grid">
             {COLLECTIONS.map(col => (
@@ -218,17 +194,16 @@ export default function Profile() {
           </div>
         )}
 
-        {/* About tab */}
         {tab === 'about' && (
           <div className="about-section">
             <div className="about-card">
               <h3>Giới thiệu</h3>
-              <p>Xin chào! Mình là Luna, một hoạ sĩ kỹ thuật số sống tại Hà Nội, Việt Nam. Mình chuyên về tranh minh hoạ kỹ thuật số phong cách neon, concept art và tác phẩm có hỗ trợ AI. Mình đã sáng tạo nghệ thuật số hơn 4 năm và yêu thích khám phá sự giao thoa giữa công nghệ và sáng tạo.</p>
+              <p>{user.bio || 'Chưa có tiểu sử'}</p>
             </div>
             <div className="about-card">
               <h3>Kỹ năng</h3>
               <div className="skill-tags">
-                {['Photoshop','Procreate','Midjourney','After Effects','Figma','Blender'].map(s => (
+                {user.skills?.map(s => (
                   <span className="skill-tag" key={s}>{s}</span>
                 ))}
               </div>
@@ -236,10 +211,7 @@ export default function Profile() {
             <div className="about-card">
               <h3>Liên kết mạng xã hội</h3>
               <div className="about-links">
-                <a href="#s" className="about-link">𝕏 @luna_exe</a>
-                <a href="#s" className="about-link">📸 @luna.exe</a>
-                <a href="#s" className="about-link">🎵 @lunaexe</a>
-                <a href="#s" className="about-link">💬 luna#2024</a>
+                <a href="#s" className="about-link">𝕏 @{user.username}</a>
               </div>
             </div>
           </div>

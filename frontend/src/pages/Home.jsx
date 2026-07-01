@@ -52,7 +52,7 @@ export default function Home() {
   const isLoggedIn = Boolean(token);  
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   const fullName = user?.fullName;
-
+  console.log('User in Home:', user);
   /* ── Data from API ── */
   const [trending,   setTrending]   = useState([]);
   const [categories, setCategories] = useState([]);

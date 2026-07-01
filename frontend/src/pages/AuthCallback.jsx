@@ -10,7 +10,7 @@ const AuthCallback = () => {
     const token = params.get("token");
     
     if (token) {
-      localStorage.setItem("accessToken", token);
+      localStorage.setItem('token', token);
 
       // Xóa token khỏi URL
       navigate("/", { replace: true });
