@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import './Products.css';
-
-const API = 'http://localhost:8080/api/v1';
-
+import { mockGetProducts } from '../api/mock';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 /* ── Stars ─────────────────────────────────────────── */
 function Stars({ rating }) {
     return (
@@ -77,7 +76,7 @@ export default function Products() {
 
     /* ── Fetch categories ────────────────────────── */
     useEffect(() => {
-        fetch(`${API}/categories`)
+        fetch(`${API_URL}/categories`)
             .then(r => r.json())
             .then(res => { if (res.status === 'success') setCategories(res.data || []); })
             .catch(() => {});
@@ -86,26 +85,17 @@ export default function Products() {
     /* ── Fetch products ──────────────────────────── */
     const fetchProducts = useCallback(() => {
         setLoading(true);
-        const params = new URLSearchParams({ page, size: 12, sort });
-        if (categoryId) params.set('categoryId', categoryId);
-
-        fetch(`${API}/products?${params}`)
-            .then(r => r.json())
-            .then(res => {
-                if (res.status === 'success') {
-                    setProducts(res.data.products || []);
-                    setPagination({
-                        currentPage:   res.data.pagination.currentPage,
-                        totalPages:    res.data.pagination.totalPages,
-                        totalElements: res.data.pagination.totalElements,
-                    });
-                } else {
-                    setError('Không thể tải sản phẩm.');
-                }
-            })
-            .catch(() => setError('Lỗi kết nối máy chủ.'))
-            .finally(() => setLoading(false));
-    }, [categoryId, page, sort]);
+        setTimeout(() => {
+            const data = mockGetProducts();
+            setProducts(data);
+            setPagination({
+                currentPage: 1,
+                totalPages: 1,
+                totalElements: data.length,
+            });
+            setLoading(false);
+        }, 500);
+    }, []);
 
     useEffect(() => {
         fetchProducts();

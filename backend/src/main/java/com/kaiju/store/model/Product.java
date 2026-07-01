@@ -43,6 +43,10 @@ public class Product {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    private String title;
+
+    private Integer stockQuantity;
+
     public Product() {}
 
     public Long getId() { return id; }
@@ -77,4 +81,10 @@ public class Product {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public Integer getStockQuantity() { return stockQuantity; }
+    public void setStockQuantity(Integer stockQuantity) { this.stockQuantity = stockQuantity; }
 }

@@ -153,6 +153,7 @@ public class ProductService {
             case "popular"    -> Sort.by(Sort.Direction.DESC, "viewCount");
             default           -> Sort.by(Sort.Direction.DESC, "createdAt"); // newest
         };
+    }
     // ===== Admin CRUD =====
 
     public Map<String, Object> getAdminProductDetail(Long id) {

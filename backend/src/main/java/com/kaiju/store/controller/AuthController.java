@@ -9,6 +9,9 @@ import com.kaiju.store.service.AuthService;
 import com.kaiju.store.repository.RegisterRequest;
 import com.kaiju.store.repository.LoginRequest;
 import com.kaiju.store.repository.ApiResponse;
+import com.kaiju.store.dto.ForgotPasswordRequest;
+import com.kaiju.store.dto.ResetPasswordRequest;
+
 import com.kaiju.store.dto.UserDto;
 import com.kaiju.store.model.User;
 
@@ -24,8 +27,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Void>> register(@RequestBody RegisterRequest request) {
-        authService.register(request.getEmail(), request.getPassword(), request.getFullName(), request.getPhoneNumber(),
-                request.getRole(), request.getAvatarUrl());
+        authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>("success",
                 "Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản.", null));
     }
@@ -58,15 +60,20 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<ApiResponse<Void>> forgotPassword(@RequestBody Map<String, String> request) {
-        authService.requestPasswordReset(request.get("email"));
-        return ResponseEntity.ok(new ApiResponse<>("success",
-                "Yêu cầu khôi phục mật khẩu thành công. Vui lòng kiểm tra hộp thư đến.", null));
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        // Gọi sang service để tạo token reset
+        authService.requestPasswordReset(request.getEmail());
+        
+        return ResponseEntity.ok(new ApiResponse<>("success", 
+                "Yêu cầu thành công. Vui lòng kiểm tra email (hoặc console) để nhận mã khôi phục.", null));
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestBody Map<String, String> request) {
-        authService.resetPassword(request.get("token"), request.get("newPassword"));
-        return ResponseEntity.ok(new ApiResponse<>("success", "Đặt lại mật khẩu thành công.", null));
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestBody ResetPasswordRequest request) {
+        // Gọi sang service để cập nhật mật khẩu mới bằng token
+        authService.resetPassword(request.getToken(), request.getNewPassword());
+        
+        return ResponseEntity.ok(new ApiResponse<>("success", 
+                "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập bằng mật khẩu mới.", null));
     }
 }

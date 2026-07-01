@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import com.kaiju.store.enums.Role;
 import com.kaiju.store.enums.UserStatus;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,7 +18,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private String password;
+    private String password_hash;
 
     @Column(nullable = false)
     private String fullName;
@@ -37,6 +38,12 @@ public class User {
 
     private String passwordResetToken;
 
+    @Column(name = "provider", nullable = false)
+    private String provider = "LOCAL"; // Mặc định là LOCAL
+
+    @Column(name = "provider_id")
+    private String providerId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
@@ -47,14 +54,11 @@ public class User {
 
     public User() {}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getPassword() { return password_hash; }
+    public void setPassword(String password) { this.password_hash = password; }
 
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
@@ -82,4 +86,13 @@ public class User {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    
+    public Long getId() { return id; }
+
+    public String getProvider() { return provider; }
+    public void setProvider(String provider) { this.provider = provider; }
+
+    public String getProviderId() { return providerId; }
+    public void setProviderId(String providerId) { this.providerId = providerId; }
 }
